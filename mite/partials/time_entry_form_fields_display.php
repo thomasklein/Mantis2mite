@@ -38,9 +38,11 @@
 	$i_bugId = $_GET['bug_id'];
 	$i_projectId = $_GET['project_id'];
 	
-	$a_userMiteData[mitePlugin::API_RSRC_P] = session_get('plugin_mite_user_projects');
-	$a_userMiteData[mitePlugin::API_RSRC_S] = session_get('plugin_mite_user_services');
-	
+	$a_userMiteData[mitePlugin::API_RSRC_P] = 
+		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
+	$a_userMiteData[mitePlugin::API_RSRC_S] =
+		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
+		
 # get user bindings for this project
 # split of the rest of the possible MITE projects/services to append it
 #######################################################################
@@ -64,7 +66,7 @@
     	$a_userBindings[$s_type][$i_idRsrcType] = $a_userMiteData[$s_type][$i_idRsrcType]['name'];
     		
     	$a_selectBoxesNewTimeEntry[$s_type] .= 
-			"<option value='".$i_idRsrcType."'>".mitePlugin::decodeValue($s_nameRsrcType)."</option>";
+			"<option value='".$i_idRsrcType."'>".$s_nameRsrcType."</option>";
     }
     
 # add unbinded resources to the resoruce select boxes 
@@ -83,7 +85,7 @@
 				
 				$s_unbindedRsrces .= 
 					"<option value='$i_idUnbindedRsrc'>".
-						mitePlugin::decodeValue($a_userMiteData[$s_type][$i_idUnbindedRsrc]['name']).
+						$a_userMiteData[$s_type][$i_idUnbindedRsrc]['name'].
 					"</option>";
 			}
 	
@@ -107,7 +109,7 @@
 		$a_miteProjectId = array_keys($a_userBindings[mitePlugin::API_RSRC_P]);
 		
 		$a_selectBoxesNewTimeEntry[mitePlugin::API_RSRC_P] =  
-			mitePlugin::decodeValue($a_userBindings[mitePlugin::API_RSRC_P][$a_miteProjectId[0]]) ."
+			$a_userBindings[mitePlugin::API_RSRC_P][$a_miteProjectId[0]] ."
 			<input type='hidden' name='plugin_mite_projects_new_time_entry' 
 				    value='".$a_miteProjectId[0]."' id='plugin_mite_projects_new_time_entry' />";
     }

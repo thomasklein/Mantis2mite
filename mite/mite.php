@@ -692,6 +692,51 @@ class mitePlugin extends MantisPlugin {
 	
 	
 /*****************************************************
+ * Decodes each property $s_fieldName in $a_values and returns an array ordered by 
+ * the property $s_fieldName of each value
+ * 
+ * E.g: $a_values = array(1 => array('name' => 'B'), 2 => array('name' => 'A'))
+ * whereas $s_fieldName = 'name'
+ * the function returns
+ * 	array(2 => array('name' => 'A'), 1 => array('name' => 'B'))
+ * 
+ * @param array multideimensional array 
+ * contains a list of entries; key is the id and value are the properties of this entry
+ * @param string property to compare agains
+ * 
+ * @return array
+ */	
+	static function decodeAndOrderByValue($a_values,$s_fieldName) {
+		
+	/*
+	 * @local array
+	 */	
+		$a_orderedValues = array();
+		
+		foreach ($a_values as $i_id => $a_props) {
+			
+			
+			if (isset($a_props[$s_fieldName]))
+				$a_props[$s_fieldName] = mitePlugin::decodeValue($a_props[$s_fieldName]);
+			
+			$a_orderedValues[$i_id] = $a_props;
+		}
+		
+		uasort($a_orderedValues,array("mitePlugin", "cmpByName"));
+		
+		return $a_orderedValues;
+	}//decodeAndOrderByValue
+	
+	
+/*****************************************************
+ * Custom function to compare the property 'name' of two arrays
+ */	
+	static function cmpByName($a, $b) {
+		
+		return strcmp($a["name"], $b["name"]);
+	}//cmp
+	
+/*****************************************************
  * Replaces defined placeholders in $s_text by their values
  */	
 	static function replacePlaceHolders($s_text,$i_bugId) {

@@ -44,9 +44,11 @@
 		exit;
 	}
 		
-	$a_userMiteData[mitePlugin::API_RSRC_P] = session_get('plugin_mite_user_projects');
-	$a_userMiteData[mitePlugin::API_RSRC_S] = session_get('plugin_mite_user_services');
-				
+	$a_userMiteData[mitePlugin::API_RSRC_P] = 
+		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
+	$a_userMiteData[mitePlugin::API_RSRC_S] =
+		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
+		
 # select MITE - MANTIS bindings of the user
 ###########################################
 	$s_query = "SELECT type, mite_project_id, mite_service_id, mantis_project_id FROM ".
@@ -106,7 +108,7 @@
 					
 					$s_selectBoxRsrc .= " selected='selected'";
 				}	
-				$s_selectBoxRsrc .= ">".mitePlugin::decodeValue($a_rsrc['name'])."</option>";
+				$s_selectBoxRsrc .= ">".$a_rsrc['name']."</option>";
 			}
 			$i_sizeSelectBox = count($a_userMiteData[$s_type]);
 		
