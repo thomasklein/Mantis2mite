@@ -32,7 +32,7 @@ var MITE_TE = function() {
 	
 		$o_frmNewTimeEntry = $('#plugin_mite_frm_new_time_entry'),
 		$o_newTimeEntry = $('#plugin_mite_new_time_entry'),
-		$o_linkShowNewTimeEntryFrm = $('#plugin_mite_link_show_new_time_entry_form'),
+		$o_linkShowNewTimeEntryFrm = $('#plugin_mite_show_new_time_entry_form a'),
 		$o_timeEntries = $('#plugin_mite_time_entries');
 	}
 	

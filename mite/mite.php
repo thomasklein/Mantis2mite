@@ -502,10 +502,11 @@ class mitePlugin extends MantisPlugin {
 	  	if (current_user_get_field(mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
 			$s_output .= "		
   					<form id='plugin_mite_frm_new_time_entry'>
-  						<a href='#' title='[ctrl-t]' accesskey='t' 
-  						   id='plugin_mite_link_show_new_time_entry_form' class='addTimeEntry'>".
-	  						lang_get('plugin_mite_show_new_time_entry_form') . "	
-  						</a>
+  						<div id='plugin_mite_show_new_time_entry_form'>
+	  						<a href='#' title='[ctrl-t]' accesskey='t' class='addTimeEntry'>".
+		  						lang_get('plugin_mite_show_new_time_entry_form') . "	
+	  						</a>
+	  					</div>
   						<div id='plugin_mite_new_time_entry'>
 	  					</div><!-- plugin_mite_new_time_entry -->
 	  					<input type='hidden' name='plugin_mite_current_bug' value='".$i_bugId."' />
