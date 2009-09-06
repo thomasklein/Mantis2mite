@@ -10,9 +10,9 @@
 	$s_plugin_mite_timetracks_visible_threshold_level = 'Minimales Zugangslevel um Zeiteinträge 
 		von anderen Nutzern für ein Problem zu sehen';
 		
-	$s_plugin_mite_description = 'Behalte deine Zeit im Auge! Dieses Plugin ermöglicht es jedem Nutzer, 
-		sich mit einem <em>mite</em>.account zu verbinden und Zeiteinträge direkt von einem Bug an 
-		<em>mite</em> zu senden.';	
+	$s_plugin_mite_description = '<code>Mantis2mite</code> verknüpft einen Mantis-Account 
+		mit einem <em>mite</em>.account. Zeiteinträge können direkt auf Probleme in Mantis 
+		erfasst werden; automatisch werden die Zeiten dann an <em>mite</em> gesendet.';	
 	
 # user account
 ##############	
@@ -47,7 +47,7 @@
 # time entries
 ##############
 	$s_plugin_mite_time_entries = 'Zeiteinträge von <em>mite</em>';
-	$s_plugin_mite_link_to_settings = 'Deine Einstellungen';
+	$s_plugin_mite_link_to_settings = 'Einstellungen';
 	$s_plugin_mite_other_services = 'andere Leistungen';
 	$s_plugin_mite_other_projects = 'andere Projekte';
 	$s_plugin_mite_header_new_time_entry = 'Sende neuen Zeiteintrag zu <em>mite</em>';
