@@ -5,7 +5,8 @@
  * 
  * @author Thomas Klein (thomas.klein83@gmail.com)
  * @licence MIT license
- * @description Replace the default edit toolbar with the Markitup toolbar.
+ * @description Connects your Mantis account with your mite.account. 
+ * Track your time easily on issues within Mantis and get them automatically send to mite.
  *
  */ 
 
