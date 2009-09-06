@@ -1,0 +1,81 @@
+!Mantis2mite_logo.png(Mantis2mite Logo)! 
+<pre>
+...for Mantis BT. Last modified: 2009-08-28
+...developed by Thomas Klein <thomas.klein83@gmail.com>
+</pre>
+
+"_mite_":http://mite.yo.lk/en is a sleek time tracking tool for teams and freelancers.
+
+<code>Mantis2mite</code> connects your Mantis account with your _mite_.account. Track your time easily on issues within Mantis and get them automatically send to _mite_.
+
+Projects from Mantis can be bundled with _mite_.projects. Furthermore, you can specify which _mite_.services should be available in Mantis on a per-project basis.
+
+h2. Requirements
+
+* "Mantis BT":http://www.mantisbt.org/ >= 1.2.0
+* PHP 5 >= 5.1.0
+* a _mite_.account (you can easily signup for a "free 30 days trial account":https://signup.mite.yo.lk/signup/en )
+
+h2. Installation
+
+# Move the 'mite' directory into the <code>plugins</code> directory of your Mantis installation
+# Login as a user with admin privileges
+# Go to <code>Manage > Manage Plugins</code>
+# Click in the box _Available Plugins_ on the link _Install_ for the listed plugin '_mite_ 1.0'
+
+h2. Setup
+
+h3. General Plugin options
+
+*Note:* To access this area, you must have admin privileges.
+
+You can define the minimum access level for users to see time entries of other users.
+Go to <code>Manage > Manage Plugins</code> and go to the plugin page by clicking on _mite_ 1.0.
+Select the access level and click and update.
+
+h3. Plugin options for your account
+
+Go to <code>My Account > mite</code> and try to connect to your _mite_.account.
+
+On successful connection you can start now to track time for every bug in Mantis you have access to.
+
+In order to provide fast access to specific _mite_.services and _mite_.projects on a bug in a specific Mantis project, you can easily interconnect those values. Just follow the instructions provided.
+
+Precondition is of course the user having Mantis projects assigned to him.
+
+h2. Tracking time
+
+Once the connection to your _mite_.account was verified, tracking your time in Mantis is very easy. Go to a bug, click on _Add new time entry_, fill out the form, send it, done!
+
+h2. FAQ
+
+h3. Why are older Mantis versions not supported?
+
+Mantis 1.2.0 is the first version with a real plugin system you can actually work with. See the "release notes":http://www.mantisbt.org/blog/?p=56 for details.
+
+h3. Will disconnecting my _mite_.account also delete the time entries in _mite_ i tracked with the plugin in Mantis?
+
+No. Only the data stored in Mantis will be deleted.
+
+h2. Known issues
+
+h3. Connecting to _mite_ and sending time entries takes forever...
+
+This might be an issue of your server, if it uses DNS servers that are too slow when trying to resolve the mite.yo.lk domain. I will have a close look at an interesting discussion about this topic on http://stackoverflow.com/questions/735091/php-filegetcontentsurl-slow-performance.
+
+If you wanna know for sure, try placing this code snippet somewhere on your server an execute it.
+
+<pre>
+<?php	
+	$ch = curl_init('http://<your-account-name>.mite.yo.lk/projects.xml');
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,
+		array('Content-Type: application/xml',
+	 		  'X-MiteApiKey: <your-api-key>'));  
+	$s_output = curl_exec($ch);
+	curl_close($ch);
+	echo $s_output;
+?>	
+</pre>
+
+If you see the results very fast (~ less than 3 seconds), this was not the issue. In this case please contact me, because it is an unknown bug ;-).

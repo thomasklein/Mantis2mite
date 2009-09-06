@@ -1,0 +1,67 @@
+<pre style='border-top: 1px solid black;border-bottom: 1px solid black;padding:0.5em 0'>
+	              __                       ___                                   
+	           __/\ \__                   /\_ \                    __            
+	  ___ ___ /\_\ \ ,_\    __       _____\//\ \    __  __     __ /\_\    ___    
+	/' __` __`\/\ \ \ \/  /'__`\    /\ '__`\\ \ \  /\ \/\ \  /'_ `\/\ \ /' _ `\  
+	/\ \/\ \/\ \ \ \ \ \_/\  __/  __\ \ \L\ \\_\ \_\ \ \_\ \/\ \L\ \ \ \/\ \/\ \ 
+	\ \_\ \_\ \_\ \_\ \__\ \____\/\_\\ \ ,__//\____\\ \____/\ \____ \ \_\ \_\ \_\
+	 \/_/\/_/\/_/\/_/\/__/\/____/\/_/ \ \ \/ \/____/ \/___/  \/___L\ \/_/\/_/\/_/
+	                                   \ \_\                   /\____/           
+	                                    \/_/                   \_/__/
+
+...for Mantis BT. Last modified: 2009-08-28
+...developed by Thomas Klein <thomas.klein83@gmail.com>
+</pre>
+
+"_mite_":http://mite.yo.lk is a sleek time tracking tool for teams and freelancers.
+
+Stay in touch with your time! The _mite_.plugin for Mantis connects your Mantis account 
+with your _mite_.account - letting you easily track your time for bugs within Mantis 
+and send it automatically to _mite_.
+
+h2. Requirements
+
+* "Mantis BT":http://www.mantisbt.org/ >= 1.2.0
+* PHP 5 >= 5.1.0
+* a _mite_.account (you can easily signup for a "free 30 days trial account":https://signup.mite.yo.lk/signup/en )
+
+h2. Installation
+
+# Move the 'mite' directory into the <code>plugins</code> directory of your Mantis installation
+# Login as a user with admin privileges
+# Go to <code>Manage > Manage Plugins</code>
+# Click in the box _Available Plugins_ on the link _Install_ for the listed plugin '_mite_ 1.0'
+
+h2. Setup
+
+h3. General Plugin options
+
+*Note:* To access this area, you must have admin privileges.
+
+You can define the minimum access level for users to see time entries of other users.
+Go to <code>Manage > Manage Plugins</code> and go to the plugin page by clicking on _mite_ 1.0.
+Select the access level and click and update.
+
+h3. Plugin options for your account
+
+Go to <code>My Account > mite</code> and try to connect to your _mite_.account.
+
+On successful connection you can start now to track time for every bug in Mantis you have access to.
+
+In order to provide fast access to specific _mite_.services and _mite_.projects on a bug in a specific Mantis project, you can easily interconnect those values. Just follow the instructions provided.
+
+Precondition is of course the user having Mantis projects assigned to him.
+
+h2. Tracking time
+
+After the connection to your _mite_.account was verified, tracking your time in Mantis is now very easy. Go to a bug, click on _Add new time entry_, fill out the form, send it, already done!
+
+h2. FAQ
+
+h3. Why are older Mantis versions not supported?
+
+Mantis 1.2.0 is the first version with a real plugin system you can actually work with. See the "release notes":http://www.mantisbt.org/blog/?p=56 for details.
+
+h3. Will disconnecting my _mite_.account also delete the time entries in _mite_ i tracked with the plugin in Mantis?
+
+No. Only the data stored in Mantis will be deleted.

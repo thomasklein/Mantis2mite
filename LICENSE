@@ -1,0 +1,17 @@
+----------------
+-- Copyright (C) 2009 Thomas Klein (thomas.klein83@gmail.com)
+
+-- mite is a sleek time tracking tool for teams and freelancers: http://mite.yo.lk
+
+-- Mantis2mite connects your Mantis account with your mite.account. Track your time easily on issues within Mantis and get them automatically send to mite.
+
+Projects from Mantis can be bundled with mite.projects. Furthermore, you can specify which mite.services should be available in Mantis on a per-project basis.
+
+-- Public Clone URL: git://github.com/thomasklein/mite.plugin-for-Mantis.git
+----------------
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.

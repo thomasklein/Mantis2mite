@@ -1,0 +1,81 @@
+!Mantis2mite_logo.png(Mantis2mite Logo)! 
+<pre>
+...für Mantis BT. Stand: 2009-08-28
+...entwickelt von Thomas Klein <thomas.klein83@gmail.com>
+</pre>
+
+"_mite_":http://mite.yo.lk ist eine schlanke webbasierte Zeiterfassung für Teams und Freiberufler.
+
+<code>Mantis2mite</code> verknüpft einen Mantis-Account mit einem _mite_.account. Zeiteinträge können direkt auf Probleme in Mantis erfasst werden; automatisch werden die Zeiten dann an _mite_ gesendet.
+
+Projekte in Mantis können _mite_.projekten zugeordnet werden. Zudem lässt sich für jedes Projekt in Mantis spezifizieren, welche _mite_.leistungen zur Verfügung stehen sollen.
+
+h2. Anforderungen
+
+* "Mantis BT":http://www.mantisbt.org/ >= 1.2.0
+* PHP 5 >= 5.1.0
+* ein _mite_.account ("30 Tage kann kostenfrei getestet werden":https://signup.mite.yo.lk/signup/de)
+
+h2. Installation
+
+# Verschiebe das 'mite' - Verzeichnis in das <code>plugins</code> - Verzeichnis deiner Mantis Installation
+# Als Nutzer mit Admin-Privilegien einloggen
+# Zur Seite <code>Verwaltung > Plugin-Verwaltung</code> wechseln
+# Unter _Verfügbare Plugins_ nach '_mite_ 1.0' suchen und auf den Link _Installation_ klicken.
+
+h2. Einrichtung
+
+h3. Allgemeine Plugin-Optionen
+
+*Achtung:* Um diesen Bereich zu betreten brauchst du Admin-Privilegien.
+
+Du kannst das minimale Zugangslevel festlegen, damit ein Nutzer die Zeiteinträge von anderen Nutzern für ein Problem sehen darf.
+
+Geh dafür auf die Seite <code>Verwaltung > Plugin-Verwaltung</code> und klicke auf das Plugin _mite_ 1.0. Wähle nun das Zugangslevel aus, speichern, fertig.
+
+h3. Plugin-Optionen für dein Nutzerkonto
+
+Geh auf die Seite <code>Konto > mite</code> und versuche dich mit deinem _mite_.account zu verbinden.
+
+Bei erfolgreicher Verbindung hast du nun bei jedem Problem die zusätzliche Option, Zeiteinträge anzulegen.
+
+Du kannst ausgewählte _mite_.projekte und _mite_.leistungen auch an Mantis-Projekte binden. Diese erscheinen dann am Anfang der Auswahllisten für einen neuen Zeiteintrag. 
+
+Vorraussetzung ist natürlich, dass dir Projekte in Mantis zugewiesen sind.
+
+h2. Zeiteinträge anlegen
+
+Nachdem die Verbindung zu deinem _mite_.account bestätigt wurde, kannst du nun sehr einfach Zeiteinträge anlegen. Einfach zum Problem deiner Wahl gehen, auf den Link _Zeiteintrag hinzufügen_ klicken, das Formular ausfüllen, abschicken, schon fertig!
+
+h2. FAQ
+
+h3. Warum werden frühere Mantis Versionen nicht unterstützt?
+
+Erst ab der Version 1.2.0 gibt es richtiges Plugin-System mit dem man arbeiten kann. Siehe auch die "Release notes":http://www.mantisbt.org/blog/?p=56.
+
+h3. Werden meine in Mantis angelegten Zeiteinträge auch bei _mite_ gelöscht, wenn ich die Verbindung zu meinem _mite_.account in Mantis löse?
+
+Nein. Nur die Daten, die in Mantis gespeichert wurden.
+
+h2. Bekannte Probleme
+
+h3. Die Verbindung zu _mite_ und das Senden von Zeiteinträgen dauern ewig...
+
+Das könnte ein Problem deines Servers sein, wenn er DNS-Server nutzt, die die <code>mite.yo.lk</code> Domain zu langsam auflösen. Auf http://stackoverflow.com/questions/735091/php-filegetcontentsurl-slow-performance läuft eine dazu relevante Diskussion. 
+
+Wenn du dir sicher sein möchtest, speichere diesen Code-Schnipsel irgendwo auf deinem Server und führe ihn aus.
+
+<pre>
+<?php
+	$ch = curl_init('http://<your-account-name>.mite.yo.lk/projects.xml');
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,
+		array('Content-Type: application/xml',
+	 		  'X-MiteApiKey: <your-api-key>'));  
+	$s_output = curl_exec($ch);
+	curl_close($ch);
+	echo $s_output;
+?>	
+</pre>
+
+Wenn du das Ergebnis sehr schnell siehst (~ weniger als 3 Sekunden), dann war dies nicht das Problem. In diesem Falle kannst du mich gerne kontaktieren, da es sich dann um einen unbekanntes Problem handelt :-). 

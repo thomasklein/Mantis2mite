@@ -1,0 +1,65 @@
+<pre style='border-top: 1px solid black;border-bottom: 1px solid black;padding:0.5em 0'>
+	              __                       ___                                   
+	           __/\ \__                   /\_ \                    __            
+	  ___ ___ /\_\ \ ,_\    __       _____\//\ \    __  __     __ /\_\    ___    
+	/' __` __`\/\ \ \ \/  /'__`\    /\ '__`\\ \ \  /\ \/\ \  /'_ `\/\ \ /' _ `\  
+	/\ \/\ \/\ \ \ \ \ \_/\  __/  __\ \ \L\ \\_\ \_\ \ \_\ \/\ \L\ \ \ \/\ \/\ \ 
+	\ \_\ \_\ \_\ \_\ \__\ \____\/\_\\ \ ,__//\____\\ \____/\ \____ \ \_\ \_\ \_\
+	 \/_/\/_/\/_/\/_/\/__/\/____/\/_/ \ \ \/ \/____/ \/___/  \/___L\ \/_/\/_/\/_/
+	                                   \ \_\                   /\____/           
+	                                    \/_/                   \_/__/
+
+...für Mantis BT. Stand: 2009-08-28
+...entwickelt von Thomas Klein <thomas.klein83@gmail.com>
+</pre>
+
+"_mite_":http://mite.yo.lk ist ein schlankes Zeiterfassungstool für Teams und Freiberufler.
+
+Behalte deine Zeit im Auge! Dieses Plugin ermöglicht es jedem Nutzer, sich mit einem _mite_.account zu verbinden und Zeiteinträge direkt von einem Problem in Mantis an _mite_ zu senden.
+
+h2. Anforderungen
+
+* "Mantis BT":http://www.mantisbt.org/ >= 1.2.0
+* PHP 5 >= 5.1.0
+* ein _mite_.account (du kannst dir problemlos einen "30 Tage gültigen und kostenlosen Account":https://signup.mite.yo.lk/signup/de anlegen)
+
+h2. Installation
+
+# Verschiebe das 'mite' - Verzeichnis in das <code>plugins</code> - Verzeichnis deiner Mantis Installation
+# Als Nutzer mit Admin-Privilegien einloggen
+# Zur Seite <code>Verwaltung > Plugin-Verwaltung</code> wechseln
+# Unter _Verfügbare Plugins_ nach '_mite_ 1.0' suchen und auf den Link _Installation_ klicken.
+
+h2. Einrichtung
+
+h3. Allgemeine Plugin-Optionen
+
+*Achtung:* Um diesen Bereich zu betreten brauchst du Admin-Privilegien.
+
+Du kannst das minimale Zugangslevel festlegen, damit ein Nutzer die Zeiteinträge von anderen Nutzern für ein Problem sehen darf.
+
+Geh dafür auf die Seite <code>Verwaltung > Plugin-Verwaltung</code> und klicke auf das Plugin _mite_ 1.0. Wähle nun das Zugangslevel aus, speichern, fertig.
+
+h3. Plugin-Optionen für dein Nutzerkonto
+
+Geh auf die Seite <code>Konto > mite</code> und versuche dich mit deinem _mite_.account zu verbinden.
+
+Bei erfolgreicher Verbindung hast du nun bei jedem Problem die zusätzliche Option, Zeiteinträge anzulegen.
+
+Du kannst ausgewählte _mite_.projekte und _mite_.leistungen auch an Mantis-Projekte binden. Diese erscheinen dann am Anfang der Auswahllisten für einen neuen Zeiteintrag. 
+
+Vorraussetzung ist natürlich, dass dir Projekte in Mantis zugewiesen sind.
+
+h2. Zeiteinträge anlegen
+
+Nachdem die Verbindung zu deinem _mite_.account bestätigt wurde, kannst du nun sehr einfach Zeiteinträge anlegen. Einfach zum Problem deiner Wahl gehen, auf den Link _Zeiteintrag hinzufügen_ klicken, das Formular ausfüllen, abschicken, schon fertig!
+
+h2. FAQ
+
+h3. Warum werden frühere Mantis Versionen nicht unterstützt?
+
+Erst ab der Version 1.2.0 gibt es richtiges Plugin-System mit dem man arbeiten kann. Siehe auch die "Release notes":http://www.mantisbt.org/blog/?p=56.
+
+h3. Werden meine in Mantis angelegten Zeiteinträge auch bei _mite_ gelöscht, wenn ich die Verbindung zu meinem _mite_.account in Mantis löse?
+
+Nein. Nur die Daten die in Mantis gespeichert wurden.

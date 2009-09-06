@@ -1,0 +1,180 @@
+<?php
+########################
+# STATIC TEXTS
+########################	
+
+# plugin settings
+#################
+	$s_plugin_mite_title = 'Mantis2mite';
+	$s_plugin_mite_config = 'Configuration';
+	$s_plugin_mite_timetracks_visible_threshold_level = 'Minimum access level 
+		to see time entries for a bug of other users';
+		
+	$s_plugin_mite_description = 'Stay in touch with your time! This plugin connects your Mantis account 
+		with your <em>mite</em>.account letting you easily track your time for bugs within Mantis 
+		and send it automatically to <em>mite</em>.';	
+	
+# user account
+##############	
+	$s_plugin_mite_user_config_header = 'Connection to your <em>mite</em>.account';
+	$s_plugin_mite_no_projets_assigned = 'Currently there are no projects assigned to you.';
+	$s_plugin_mite_connection_verified = '<strong>Status:</strong> Connection active 
+		(Updated at <span id="plugin_mite_last_updated">%s</span>)';
+	
+	$s_plugin_mite_account_name = 'Account name';
+	$s_plugin_mite_api_key = 'API-Key';
+	
+	$s_plugin_mite_connection_unverified = '<strong>Status:</strong> Not connected';	
+	
+	$s_plugin_mite_header_preferences = 'Preferences';
+	
+	$s_plugin_mite_help_interconnections = 'Selected <em>mite</em>.projects / <em>mite</em>.services 
+		will be shown on top of the selection lists for a new time entry. You can choose multiple 
+		services by clicking with a pressed control key (Windows) or command key (Mac) on several 
+		entries in the lists.<br /><br /> Quicklinks to your Mantis projects:';  
+	
+	$s_plugin_mite_header_note_pattern = 'Predefined text for a time entry note';
+	$s_plugin_mite_help_note_pattern = 'Possible placeholders are: 
+		<code>{bug_id}, {bug_summary}, {bug_description}, {bug_category}, {project_id}, {project_name}, 
+		{user_id}, {user_name}</code>';
+	
+	$s_plugin_mite_header_interconnections = 'Interconnections';
+	$s_plugin_mite_please_select = '-- None --';
+	$s_plugin_mite_assignment_mite_project = '<em>mite</em>.project';
+	$s_plugin_mite_assignment_mite_service = '<em>mite</em>.services';
+	
+
+# time entries
+##############
+	$s_plugin_mite_time_entries = 'Time entries for <em>mite</em>';
+	$s_plugin_mite_link_to_settings = 'Your settings';
+	$s_plugin_mite_other_services = 'other services';
+	$s_plugin_mite_other_projects = 'other projects';
+	$s_plugin_mite_header_new_time_entry = 'Send new time entry to <em>mite</em>';
+	$s_plugin_mite_header_date_new_time_entry = 'Date';
+	$s_plugin_mite_header_projects_new_time_entry = 'Project';
+	$s_plugin_mite_header_services_new_time_entry = 'Service';
+	$s_plugin_mite_header_hours_new_time_entry = 'Hours';
+	$s_plugin_mite_header_note_new_time_entry = 'Note';
+	$s_plugin_mite_hours_help_text = 'Type 1:30 or 1.5 for 1 hour 30 minutes.';
+	$s_plugin_mite_date_help_text = 'Valid date format: <code>yyyy-mm-dd</code>';
+	
+	$s_plugin_mite_time_entry_header_date_added = 'Date added';
+	$s_plugin_mite_time_entry_header_mite_note = 'Note';
+	$s_plugin_mite_time_entry_header_mite_project = 'Project';
+	$s_plugin_mite_time_entry_header_mite_service = 'Service';
+	$s_plugin_mite_time_entry_header_mite_hours = 'Hours';
+	$s_plugin_mite_time_entry_header_mite_total_hours = 'Total hours';
+	$s_plugin_mite_time_entry_user = 'User';
+	$s_plugin_mite_no_user_time_entries = 'No time entries for this bug yet.';
+	
+	$s_plugin_mite_user_time_entries = 'My time entries';
+	$s_plugin_mite_time_entries_summary = 'Summary time entries';
+	$s_plugin_mite_time_entries_number = 'Number time entries';
+	$s_plugin_mite_time_entries_sum = 'Total time';
+
+########################
+# BUTTON AND LINK LABELS
+########################
+	$s_plugin_mite_check_account_data = 'Check data and synchronize';
+	$s_plugin_mite_check_account_data_active = 'Checking data and synchronizing...';
+	$s_plugin_mite_save_bindings = 'Save preferences';
+	$s_plugin_mite_save_bindings_active = 'Saving preferences...';
+	$s_plugin_mite_disconnect_account_data = 'Disconnect <em>mite</em>.account';
+	$s_plugin_mite_disconnecting_account_data_active = 'Disconnecting account...';
+	$s_plugin_mite_add_new_time_entry = 'Send to mite';
+	$s_plugin_mite_msg_adding_new_time_entry = 'Sending data to <em>mite</em>...';
+	$s_plugin_mite_show_new_time_entry_form = 'Add new time entry';
+	$s_plugin_mite_showing_new_time_entry_form = 'Adding new time entry...';
+	$s_plugin_mite_cancel_adding_time_entry = 'Cancel';
+	$s_plugin_mite_reset_form = 'Reset all values';
+	$s_plugin_mite_delete_time_entry = 'Delete';
+	$s_plugin_mite_deleting_time_entry = 'Deleting...';
+	$s_plugin_mite_time_entry_show_note = 'Show';
+	$s_plugin_mite_change_api_key = 'Change';
+	$s_plugin_mite_change_account_name = 'Change';
+	$s_plugin_mite_time_show_entries_other_user = 'Show users time entries';
+	
+########################
+# PLACEHOLDERS
+########################
+	$s_plugin_mite_loading_user_bindings = 'Loading preferences...';
+	$s_plugin_mite_loading_time_entries = 'Loading time entries...';
+	
+
+########################
+# ACTION-BASED MESSAGES 
+########################
+	
+# user account
+##############	
+	$s_plugin_mite_msg_success_saving_bindings = 'Your preferences were saved';
+	$s_plugin_mite_msg_error_saving_bindings = 'Your preferences could not be saved.
+		Please check the javascript console for a detailed error message.';	
+	
+	$s_plugin_mite_msg_success_verification = 'The connection to your 
+		<em>mite</em>.account is now active!<br /> All of your projects and services were imported.';
+	
+	$s_plugin_mite_msg_success_updating_account_data = 'Your data was updated';
+	
+	$s_plugin_mite_txt_error_updating_account_data = 'Could not update
+		your account data. Please check the javascript console for a detailed error message.';
+		
+	$s_plugin_mite_msg_database_error = 'There was an database error when 
+		trying to execute the script. Please check the javascript console for a detailed error message.';	
+		
+	$s_plugin_mite_msg_error_verification = 'Could not connect to your mite account. 
+		Please recheck your account data.';
+	
+	$s_plugin_mite_msg_missing_account_data = 'You forgot to provide your account data.';
+	
+	$s_plugin_mite_msg_error_disconnecting_account = 'Could not disconnect your account. Please check 
+		the javascript console for a detailed error message.';
+	
+	$s_plugin_mite_msg_confirm_disconnecting_account = 'Are you sure you want to disconnect your 
+		mite.account and delete all of your saved data from Mantis?';
+		
+	$s_plugin_mite_msg_success_disconnecting_account = 'Your account was disconnected from Mantis 
+		and all of your saved data within the plugin is now deleted.';
+		
+	$s_plugin_mite_msg_error_loading_binding_area = 'Could not load your preferences.
+		Please check the javascript console for a detailed error message.';	
+		
+# time entries
+##############		
+	$s_plugin_mite_msg_error_adding_time_entry_fnf = ' Could not add the time entry. 
+		Please check the javascript console for a detailed error message.';
+	
+	$s_plugin_mite_msg_error_adding_time_entry = ' Could not add the time entry.';
+	
+	$s_plugin_mite_msg_error_loading_time_entries_fnf = 'Could not load the 
+		time entries for this bug. Please check the javascript console for a detailed error message.';
+		
+	$s_plugin_mite_msg_success_adding_time_entry = 'A new time entry was
+		added.';
+		
+	$s_plugin_mite_invalid_time_format = 'Your hours format is not supported.
+		Examples for valid time formats are: <code>1:30 or 1.5 or 1,5 for 1 hour 30 minutes.</code>';
+		
+	$s_plugin_mite_msg_missing_time_entry_hours = 'You have to specify a time. 
+		Starting or stopping the <em>mite</em>.timetracker is not supported.';
+		
+	$s_plugin_mite_msg_close_message = 'Close message';	
+	
+	$s_plugin_mite_confirm_deleting_time_entry = 'Are you sure you want to delete this time entry?';
+		
+	$s_plugin_mite_msg_error_deleting_time_entry_fnf = 'Could not delete 
+		the time entry. Please check the javascript console for a detailed error message.';	
+	
+	$s_plugin_mite_msg_success_deleting_time_entry = 'The time entry
+		was deleted.';
+		
+	$s_plugin_mite_msg_error_deleting_time_entry = '
+		Could not delete the time entry.';
+	
+	$s_plugin_mite_msg_error_invalid_date = '
+		Your date format is invalid. Please refer to the help text to see the valid structure.';	
+		
+		
+		
+?>
