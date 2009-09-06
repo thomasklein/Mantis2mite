@@ -1,5 +1,5 @@
 <?php
-/* Mantis2mite plugin for Mantis
+/* Mantis2mite plugin for MantisBT
  * 
  * mite is an sleek time tracking tool for team and freelancers: http://mite.yo.lk
  * 
