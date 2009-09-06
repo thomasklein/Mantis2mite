@@ -1,9 +1,3 @@
-!Mantis2mite_logo.png(Mantis2mite Logo)! 
-<pre>
-...für Mantis BT. Stand: 2009-08-28
-...entwickelt von Thomas Klein <thomas.klein83@gmail.com>
-</pre>
-
 "_mite_":http://mite.yo.lk ist eine schlanke webbasierte Zeiterfassung für Teams und Freiberufler.
 
 <code>Mantis2mite</code> verknüpft einen Mantis-Account mit einem _mite_.account. Zeiteinträge können direkt auf Probleme in Mantis erfasst werden; automatisch werden die Zeiten dann an _mite_ gesendet.
@@ -78,4 +72,8 @@ Wenn du dir sicher sein möchtest, speichere diesen Code-Schnipsel irgendwo auf 
 ?>	
 </pre>
 
-Wenn du das Ergebnis sehr schnell siehst (~ weniger als 3 Sekunden), dann war dies nicht das Problem. In diesem Falle kannst du mich gerne kontaktieren, da es sich dann um einen unbekanntes Problem handelt :-). 
+Wenn du das Ergebnis sehr schnell siehst (~ weniger als 3 Sekunden), dann war dies nicht das Problem. In diesem Falle kannst du mich gerne kontaktieren, da es sich dann um einen unbekanntes Problem handelt :-).
+
+h2. Lizenz
+
+<code>Mantis2mite</code> steht unter den Bedingungen der MIT-Lizenz. Siehe auch die mitgelieferte  MIT-LICENSE Datei. 
