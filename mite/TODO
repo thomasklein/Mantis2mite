@@ -1,6 +1,0 @@
-- include filter in the 'summary' page for statistics; something like 'Per time entries/ Per time'
-- secure/encrypt stored mite.account data of the user (can't use the 'mcrypt' module because it is included by default within PHP)
-- attach the 'new time entry form' also to bug notes
-- on some servers the cURL request takes ages, this might be an DNS issue; look for updates on discussion http://stackoverflow.com/questions/735091/php-filegetcontentsurl-slow-performance
-- possibility to edit time entries
-- create new mite.services/mite.projects from within Mantis
