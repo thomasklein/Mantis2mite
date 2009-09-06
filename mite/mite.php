@@ -1,10 +1,10 @@
 <?php
-/* mite.plugin for Mantis
+/* Mantis2mite plugin for Mantis
  * 
  * mite is an sleek time tracking tool for team and freelancers: http://mite.yo.lk
  * 
  * @author Thomas Klein (thomas.klein83@gmail.com)
- * @licence GNU General Public Licence 2.0 or later
+ * @licence MIT license
  * @description Replace the default edit toolbar with the Markitup toolbar.
  *
  */ 
