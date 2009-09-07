@@ -12,7 +12,7 @@ h2. Anforderungen
 
 h2. Installation
 
-# Verschiebe das 'mite' - Verzeichnis in das <code>plugins</code> - Verzeichnis deiner Mantis Installation
+# Verschiebe das <code>Mantis2mite</code> - Verzeichnis in das <code>plugins</code> - Verzeichnis deiner Mantis Installation
 # Als Nutzer mit Admin-Privilegien einloggen
 # Zur Seite <code>Verwaltung > Plugin-Verwaltung</code> wechseln
 # Unter _Verfügbare Plugins_ nach 'Mantis2_mite_ 1.0' suchen und auf den Link _Installation_ klicken.
