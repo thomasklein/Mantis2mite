@@ -15,7 +15,7 @@ h2. Installation
 # Move the 'mite' directory into the <code>plugins</code> directory of your Mantis installation
 # Login as a user with admin privileges
 # Go to <code>Manage > Manage Plugins</code>
-# Click in the box _Available Plugins_ on the link _Install_ for the listed plugin '_mite_ 1.0'
+# Click in the box _Available Plugins_ on the link _Install_ for the listed plugin 'Mantis2_mite_ 1.0'
 
 h2. Setup
 
