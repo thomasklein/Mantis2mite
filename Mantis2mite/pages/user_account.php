@@ -29,8 +29,8 @@
 # build config arrays for convenient access to necessary elements
 ################################################################# 	
 	$a_configParams['api_key'] = array(
-		'name'				=> mitePlugin::DB_FIELD_API_KEY,
-		'value' 			=> current_user_get_field(mitePlugin::DB_FIELD_API_KEY),
+		'name'				=> Mantis2mitePlugin::DB_FIELD_API_KEY,
+		'value' 			=> current_user_get_field(Mantis2mitePlugin::DB_FIELD_API_KEY),
 		'label'				=> lang_get('plugin_mite_api_key'),
 		'type'   			=> 'text',
 		'readonly'   		=> '',
@@ -38,11 +38,11 @@
 		'help' 				=> '');
 	
 	if ($a_configParams['api_key']['value'])
-		$a_configParams['api_key']['value'] = mitePlugin::decodeValue($a_configParams['api_key']['value']);
+		$a_configParams['api_key']['value'] = Mantis2mitePlugin::decodeValue($a_configParams['api_key']['value']);
 	
 	$a_configParams['account_name'] = array(
-		'name'				=> mitePlugin::DB_FIELD_ACCOUNT_NAME,
-		'value' 			=> current_user_get_field(mitePlugin::DB_FIELD_ACCOUNT_NAME),
+		'name'				=> Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME,
+		'value' 			=> current_user_get_field(Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME),
 		'label'				=> lang_get('plugin_mite_account_name'),
 		'type'   			=> 'text',
 		'readonly'   		=> '',
@@ -51,20 +51,20 @@
 	
 	if ($a_configParams['account_name']['value']) {
 		$a_configParams['account_name']['value'] = 
-			mitePlugin::decodeValue($a_configParams['account_name']['value']);
+			Mantis2mitePlugin::decodeValue($a_configParams['account_name']['value']);
 	}
 	
 # get the path to this plugin	
 	$s_pluginDirPath = helper_mantis_url("plugins/".plugin_get_current()."/");
 
 # get connection status 	
-	$b_miteConnectionVerified = current_user_get_field(mitePlugin::DB_FIELD_CONNECT_VERIFIED);
+	$b_miteConnectionVerified = current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED);
 	
 # add options if the connection was verified
 ############################################	
 	if ($b_miteConnectionVerified) {
 		$s_miteConnectionStatus = sprintf(lang_get('plugin_mite_connection_verified'),
-						    			  current_user_get_field(mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED));
+						    			  current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED));
 		$s_connectionStatusCssClass = 'plugin_mite_positive_connection_status';
 		
 		$a_configParams['account_name']['readonly'] = $a_configParams['api_key']['readonly'] = 

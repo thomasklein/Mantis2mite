@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();	 	
+	Mantis2mitePlugin::initPartial();	 	
 
 ############
 # VARS
@@ -38,22 +38,22 @@
 	header('Content-Type: text/xml; charset=utf-8');
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	
-	$s_DBTable_mps = plugin_table(mitePlugin::DB_TABLE_PS);
-	$s_tableTimeEntries = plugin_table(mitePlugin::DB_TABLE_TE);
+	$s_DBTable_mps = plugin_table(Mantis2mitePlugin::DB_TABLE_PS);
+	$s_tableTimeEntries = plugin_table(Mantis2mitePlugin::DB_TABLE_TE);
 	$i_userId = auth_get_current_user_id();
-	$a_fieldNamesMiteRsrc_id = array(mitePlugin::API_RSRC_P => 'mite_project_id',
-									 mitePlugin::API_RSRC_S => 'mite_service_id');
+	$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
+									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
 	
 # PROJECTS AND SERVICES synchronisation
 #######################################
-	foreach (mitePlugin::$a_miteResources as $s_type => $s_rsrcPattern) {
+	foreach (Mantis2mitePlugin::$a_miteResources as $s_type => $s_rsrcPattern) {
 		
 	# time entries are handled later on	
-		if(($s_type == mitePlugin::API_RSRC_TEP) || ($s_type == mitePlugin::API_RSRC_TE)) continue;
+		if(($s_type == Mantis2mitePlugin::API_RSRC_TEP) || ($s_type == Mantis2mitePlugin::API_RSRC_TE)) continue;
 		
 		$s_apiURL = sprintf($s_rsrcPattern,
-							urlencode($_POST[mitePlugin::DB_FIELD_ACCOUNT_NAME]),
-							urlencode($_POST[mitePlugin::DB_FIELD_API_KEY]));
+							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]),
+							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]));
 		
 	# get MITE data of the user from the api	
 		if (TRUE == ($s_content = @file_get_contents($s_apiURL))) {
@@ -64,14 +64,14 @@
 				
 			# get projects with the same name to append the customer name later on
 			# to better distinguish them when showing up in a selection box
-				if ($s_type == mitePlugin::API_RSRC_P) {
+				if ($s_type == Mantis2mitePlugin::API_RSRC_P) {
 					$a_miteProjectNames[(string)$o_child->name][((int)$o_child->id)] = 
 						(string)$o_child->{'customer-name'};
 				}
 				
 				$a_miteUserData[$s_type][(int)$o_child->id] = array( 
 					'name' 			  => (string)$o_child->name,
-					'mite_updated_at' => mitePlugin::mysqlDate((string)$o_child->{'updated-at'}));
+					'mite_updated_at' => Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'}));
 			}
 		}
 	# !!! STOP THE EXECUTION OF THE FOREACH LOOP !!! and check the other urls  	
@@ -120,7 +120,7 @@
 ############################## 
 	$s_query = 
 		"SELECT id, mite_time_entry_id, mite_project_id, updated_at FROM ".
-		 plugin_table(mitePlugin::DB_TABLE_TE).
+		 plugin_table(Mantis2mitePlugin::DB_TABLE_TE).
 		" WHERE user_id = ".$i_userId;
 	
 	$r_result = db_query_bound($s_query);
@@ -136,13 +136,13 @@
 # and check available entries in MANTIS for change	
 	foreach ($a_mantisTimeEntries as $i_miteProjectId => $a_timeEntries) {
 		
-		$s_apiURL = sprintf(mitePlugin::$a_miteResources[mitePlugin::API_RSRC_TEP],
-							urlencode($_POST[mitePlugin::DB_FIELD_ACCOUNT_NAME]),
+		$s_apiURL = sprintf(Mantis2mitePlugin::$a_miteResources[Mantis2mitePlugin::API_RSRC_TEP],
+							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]),
 							intval($i_miteProjectId),
-							urlencode($_POST[mitePlugin::DB_FIELD_API_KEY]));
+							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]));
 
 		if (FALSE == ($s_content = @file_get_contents($s_apiURL))) {
-			$a_errors[mitePlugin::API_RSRC_TEP][] = "Could not retrieve data from <em>".$s_apiURL."</em>";
+			$a_errors[Mantis2mitePlugin::API_RSRC_TEP][] = "Could not retrieve data from <em>".$s_apiURL."</em>";
 			break;
 		}
 				
@@ -160,7 +160,7 @@
 					$b_foundMantisTimeEntry = true;
 					
 					$s_miteTimeEntryUpdated = 
-						mitePlugin::mysqlDate((string)$o_child->{'updated-at'});
+						Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'});
 						
 					if ($a_timeEntry['updated_at'] != $s_miteTimeEntryUpdated) {
 						
@@ -182,15 +182,15 @@
 # check each time entry not found separately to find out if it was deletet or just moved to another project	
 	foreach ($a_mantisTimeEntriesNotFound as $i_miteTimeEntryId => $i_mantisTimeEntryId) {
 		
-		$s_apiURL = sprintf(mitePlugin::$a_miteResources[mitePlugin::API_RSRC_TE],
-							$_POST[mitePlugin::DB_FIELD_ACCOUNT_NAME],
+		$s_apiURL = sprintf(Mantis2mitePlugin::$a_miteResources[Mantis2mitePlugin::API_RSRC_TE],
+							$_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME],
 							$i_miteTimeEntryId,
-							$_POST[mitePlugin::DB_FIELD_API_KEY]);
+							$_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]);
 
 	# if the entry does not exist anymore, delete it from the MANTIS database 						
 		if (FALSE == ($s_content = @file_get_contents($s_apiURL))) {
 			
-			$a_logs[mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
+			$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
 			$a_queries[] = "DELETE FROM $s_tableTimeEntries WHERE id = $i_mantisTimeEntryId";
 		}
 	# if it does exist, but was moved to another project, prepare params to update the entry
@@ -199,7 +199,7 @@
 			$o_xml = simplexml_load_string($s_content);
 			
 			$s_miteTimeEntryUpdated = 
-						mitePlugin::mysqlDate((string)$o_xml->{'updated-at'});
+						Mantis2mitePlugin::mysqlDate((string)$o_xml->{'updated-at'});
 						
 			$a_mantisTimeEntriesToUpdate[$i_mantisTimeEntryId] = array(
 				"updated_at" 	  => $s_miteTimeEntryUpdated,
@@ -216,7 +216,7 @@
 #####################################################
 	if (!empty($a_errors)) {
 		
-		user_set_field($i_userId,mitePlugin::DB_FIELD_CONNECT_VERIFIED, 0);
+		user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED, 0);
 		
 		foreach ($a_errors as $s_type => $a_messages) {
 			
@@ -231,7 +231,7 @@
 # update time entries	
 	foreach ($a_mantisTimeEntriesToUpdate as $i_mantisTimeEntryId => $a_updatedValues) {
 		
-		$a_logs[mitePlugin::API_RSRC_TE][] = " 
+		$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = " 
 			Updated time entry '$i_mantisTimeEntryId': 
 				mite_project_id=".$a_updatedValues['mite_project_id'].", 
 		 		mite_service_id=".$a_updatedValues['mite_service_id'].",
@@ -262,7 +262,7 @@
 			$s_entryName = $a_tmpEntry['name'];
 			
 		# append the customer name to a project name that belongs to more than one customers 
-			if (($s_type == mitePlugin::API_RSRC_P) && 
+			if (($s_type == Mantis2mitePlugin::API_RSRC_P) && 
 				(count($a_miteProjectNames[$s_entryName]) > 1)) {
 				
 				$s_entryName .= " (".$a_miteProjectNames[$s_entryName][$i_idNewEntry].")";
@@ -277,7 +277,7 @@
 				" (user_id,name,type,".$a_fieldNamesMiteRsrc_id[$s_type].",mite_updated_at)".
 		 		" VALUES (%d, '%s', '%s', %d ,'%s')",
 				$i_userId,
-				mitePlugin::encodeValue($s_entryName),
+				Mantis2mitePlugin::encodeValue($s_entryName),
 				$s_type,
 				$i_idNewEntry,
 				$a_tmpEntry['mite_updated_at']);
@@ -316,7 +316,7 @@
 				$s_entryName = $a_tmpEntryMite['name'];
 				
 			# append the customer name to a project name that belongs to more than one customers 
-				if (($s_type == mitePlugin::API_RSRC_P) && 
+				if (($s_type == Mantis2mitePlugin::API_RSRC_P) && 
 					(count($a_miteProjectNames[$s_entryName]) > 1)) {
 					
 					$s_entryName .= " (".$a_miteProjectNames[$s_entryName][$i_idEntryPossiblyModified].")";
@@ -330,7 +330,7 @@
 					UPDATE ".$s_DBTable_mps." 
 					SET name = '%s', mite_updated_at = '%s'
 					WHERE id = %d",
-					mitePlugin::encodeValue($s_entryName),
+					Mantis2mitePlugin::encodeValue($s_entryName),
 					$a_tmpEntryMite['mite_updated_at'],
 					$a_tmpEntryMantis['id']);
 			}
@@ -344,19 +344,19 @@
 	}
 	
 # set connection verified flag in the database	
-	user_set_field($i_userId,mitePlugin::DB_FIELD_CONNECT_VERIFIED, 1);
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED, 1);
 
 # update last update value	
-	user_set_field($i_userId,mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED, mitePlugin::mysqlDate());
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED, Mantis2mitePlugin::mysqlDate());
 	
 # save the account name	
 	user_set_field($i_userId,
-				   mitePlugin::DB_FIELD_ACCOUNT_NAME,
-				   mitePlugin::encodeValue($_POST[mitePlugin::DB_FIELD_ACCOUNT_NAME]));
+				   Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME,
+				   Mantis2mitePlugin::encodeValue($_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]));
 # save the API key				   
 	user_set_field($i_userId,
-				   mitePlugin::DB_FIELD_API_KEY,
-				   mitePlugin::encodeValue($_POST[mitePlugin::DB_FIELD_API_KEY]));
+				   Mantis2mitePlugin::DB_FIELD_API_KEY,
+				   Mantis2mitePlugin::encodeValue($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]));
 	
 # build xml log messages	
 	foreach ($a_logs as $s_type => $a_messages) {
@@ -367,7 +367,7 @@
 	}
 	
 # force re-initialization of session stored user values	
-	mitePlugin::initSessionVars();
+	Mantis2mitePlugin::initSessionVars();
 	session_set('plugin_mite_status_session_vars','isCurrent');
 
 # return xml log messages

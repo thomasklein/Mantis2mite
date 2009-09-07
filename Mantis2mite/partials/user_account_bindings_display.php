@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 	
 ############	
 # VARS 
@@ -44,15 +44,15 @@
 		exit;
 	}
 		
-	$a_userMiteData[mitePlugin::API_RSRC_P] = 
-		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
-	$a_userMiteData[mitePlugin::API_RSRC_S] =
-		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
+	$a_userMiteData[Mantis2mitePlugin::API_RSRC_P] = 
+		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
+	$a_userMiteData[Mantis2mitePlugin::API_RSRC_S] =
+		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
 		
 # select MITE - MANTIS bindings of the user
 ###########################################
 	$s_query = "SELECT type, mite_project_id, mite_service_id, mantis_project_id FROM ".
-					plugin_table(mitePlugin::DB_TABLE_PSMP).
+					plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP).
 			   " WHERE user_id=".$i_userId;
 		
 	$r_result = db_query_bound($s_query);
@@ -62,7 +62,7 @@
 		while ($a_row = db_fetch_array($r_result)) {
 			
 			$s_type = $a_row['type'];
-			$i_dataId = $a_row[mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type]];
+			$i_dataId = $a_row[Mantis2mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type]];
 			$a_userBindings[$s_type][$i_dataId][] = $a_row['mantis_project_id'];
 		}
 	}				
@@ -88,13 +88,13 @@
 		
 	# create select boxes for all MITE resources of the user
 	#######################################################		
-		foreach (mitePlugin::$a_rsrcTypes as $s_type) {
+		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
 			
 			$a_selectBoxesRsrc[$s_type] = '';
 			$s_selectBoxRsrc = '';
 			$i_sizeSelectBox = 0;
 			
-			if ($s_type == mitePlugin::API_RSRC_P) {
+			if ($s_type == Mantis2mitePlugin::API_RSRC_P) {
 				$s_selectBoxRsrc .= "<option value=''>".lang_get('plugin_mite_please_select')."</option>";
 			}
 			
@@ -117,7 +117,7 @@
 					class='sb_plugin_mite_".$s_type."'";
 
 		# only allow selecting multiple entries for services	
-			if ($s_type == mitePlugin::API_RSRC_S)
+			if ($s_type == Mantis2mitePlugin::API_RSRC_S)
 				$a_selectBoxesRsrc[$s_type] .= " multiple='multiple'";		
 			else
 				$i_sizeSelectBox = 1;
@@ -132,9 +132,9 @@
 			<a name='project_".$a_mantisProject['id']."'></a>
 			<fieldset><legend>".$a_mantisProject['name']."</legend>
 				<label>".lang_get('plugin_mite_assignment_mite_project')."</label>".
-				$a_selectBoxesRsrc[mitePlugin::API_RSRC_P]."
+				$a_selectBoxesRsrc[Mantis2mitePlugin::API_RSRC_P]."
 				<label>".lang_get('plugin_mite_assignment_mite_service')."</label>".
-					$a_selectBoxesRsrc[mitePlugin::API_RSRC_S]."
+					$a_selectBoxesRsrc[Mantis2mitePlugin::API_RSRC_S]."
 			</fieldset>";
 	}	
 	
@@ -143,8 +143,8 @@
 	$s_output .= " 
 		<label>".lang_get('plugin_mite_header_note_pattern')."</label>
 		<p class='bindings_help'>".lang_get('plugin_mite_help_note_pattern')."</p>	
-			<input type='text' class='note_pattern' name='".mitePlugin::DB_FIELD_NOTE_PATTERN."' value='".
-			stripslashes(current_user_get_field(mitePlugin::DB_FIELD_NOTE_PATTERN))."' autocomplete='off' />
+			<input type='text' class='note_pattern' name='".Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN."' value='".
+			stripslashes(current_user_get_field(Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN))."' autocomplete='off' />
 		<label>".lang_get('plugin_mite_header_interconnections')."</label>
 		<p class='bindings_help'>".lang_get( 'plugin_mite_help_interconnections' )."</p>
 			$s_quickLinksList

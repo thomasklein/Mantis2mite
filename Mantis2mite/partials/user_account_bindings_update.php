@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 
 ############	
 # VARS 
@@ -35,9 +35,9 @@
 	echo '<?xml version="1.0" encoding="UTF-8"?>';	
 	
 	$i_userId = auth_get_current_user_id();
-	$a_fieldNamesMiteRsrc_id = array(mitePlugin::API_RSRC_P => 'mite_project_id',
-									 mitePlugin::API_RSRC_S => 'mite_service_id');
-	$s_DBTable_mpsmp = plugin_table(mitePlugin::DB_TABLE_PSMP);
+	$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
+									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
+	$s_DBTable_mpsmp = plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP);
 	
 # select MANTIS projects of the user
 ####################################
@@ -56,7 +56,7 @@
 # select MITE - MANTIS bindings of the user
 ###########################################
 	$s_query = "SELECT type, mite_project_id, mite_service_id, mantis_project_id FROM ".
-					plugin_table(mitePlugin::DB_TABLE_PSMP).
+					plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP).
 			   " WHERE user_id=".$i_userId;
 		
 	$r_result = db_query_bound($s_query);
@@ -80,7 +80,7 @@
 			
 			foreach ($_POST['sb_plugin_mite_projects_mantis_project_' . $i_projectId] as $i_rsrcId) {
 				if (is_numeric($i_rsrcId)) {
-					$a_userSelectedBindings[$i_projectId][mitePlugin::API_RSRC_P][] = $i_rsrcId;
+					$a_userSelectedBindings[$i_projectId][Mantis2mitePlugin::API_RSRC_P][] = $i_rsrcId;
 				}
 			}
 		}
@@ -90,7 +90,7 @@
 			
 			foreach ($_POST['sb_plugin_mite_services_mantis_project_' . $i_projectId] as $i_rsrcId) {
 				if (is_numeric($i_rsrcId)) {
-					$a_userSelectedBindings[$i_projectId][mitePlugin::API_RSRC_S][] = $i_rsrcId;
+					$a_userSelectedBindings[$i_projectId][Mantis2mitePlugin::API_RSRC_S][] = $i_rsrcId;
 				}
 			}
 		}
@@ -129,7 +129,7 @@
 		$a_updatedPB = $a_userSelectedBindings[$i_updatedProject]; //updated project bindings
 		$a_oldPB = $a_userBindings[$i_updatedProject];// old project bindings
 		
-		foreach (mitePlugin::$a_rsrcTypes as $s_type) {
+		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
 		
 		# prepare arrays for comparison	
 			if (!isset($a_updatedPB[$s_type])) $a_updatedPB[$s_type] = array();
@@ -170,7 +170,7 @@
 		
 		$a_project = $a_userBindings[$i_removedProjectId];
 		
-		foreach (mitePlugin::$a_rsrcTypes as $s_type) {
+		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
 			
 		# prepare array for foreach loop	
 			if (!isset($a_project[$s_type])) $a_project[$s_type] = array();
@@ -192,8 +192,8 @@
 	
 	# save the API key				   
 	user_set_field($i_userId,
-				   mitePlugin::DB_FIELD_NOTE_PATTERN,
-				   $_POST[mitePlugin::DB_FIELD_NOTE_PATTERN]);
+				   Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN,
+				   $_POST[Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN]);
 	
 		
 	echo "<messages datetimestamp='".gmdate('Y-m-d H:i:s')."'>" . $s_xmlMsg . "</messages>";	

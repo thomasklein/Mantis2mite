@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 
 ############	
 # VARS 
@@ -38,29 +38,29 @@
 	$i_bugId = $_GET['bug_id'];
 	$i_projectId = $_GET['project_id'];
 	
-	$a_userMiteData[mitePlugin::API_RSRC_P] = 
-		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
-	$a_userMiteData[mitePlugin::API_RSRC_S] =
-		mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
+	$a_userMiteData[Mantis2mitePlugin::API_RSRC_P] = 
+		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
+	$a_userMiteData[Mantis2mitePlugin::API_RSRC_S] =
+		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
 		
 # get user bindings for this project
 # split of the rest of the possible MITE projects/services to append it
 #######################################################################
 	$s_query = "SELECT type, mite_project_id,mite_service_id FROM ".
-			    	plugin_table(mitePlugin::DB_TABLE_PSMP).
+			    	plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP).
 			   " WHERE user_id = ".$i_userId." AND mantis_project_id = ".$i_projectId;							 	 
 	
     $r_result = db_query_bound($s_query);
 
     $b_userHasBindings = (db_num_rows($r_result) > 0);
     
-    $a_userBindings[mitePlugin::API_RSRC_S] = $a_userBindings[mitePlugin::API_RSRC_P] = array();
+    $a_userBindings[Mantis2mitePlugin::API_RSRC_S] = $a_userBindings[Mantis2mitePlugin::API_RSRC_P] = array();
     
 # get users MITE projects and services binded to this MANTIS project 
 #################################################################### 
     while ($b_userHasBindings && ($a_row = db_fetch_array($r_result))) {
 		$s_type = $a_row['type'];
-    	$s_rsrcTypeFieldName = mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type];
+    	$s_rsrcTypeFieldName = Mantis2mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type];
     	$i_idRsrcType = $a_row[$s_rsrcTypeFieldName];
     	$s_nameRsrcType = $a_userMiteData[$s_type][$a_row[$s_rsrcTypeFieldName]]['name'];
     	$a_userBindings[$s_type][$i_idRsrcType] = $a_userMiteData[$s_type][$i_idRsrcType]['name'];
@@ -72,7 +72,7 @@
 # add unbinded resources to the resoruce select boxes 
 # but separate them with an optgroup
 #####################################################	
-    foreach (mitePlugin::$a_rsrcTypes as $s_type) {
+    foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
     	
     	$a_unbindedRsrces = array_diff(array_keys($a_userMiteData[$s_type]),
     								   array_keys($a_userBindings[$s_type]));
@@ -104,12 +104,12 @@
 				$a_selectBoxesNewTimeEntry[$s_type]."</select>";
     }
     
-	if (count($a_userBindings[mitePlugin::API_RSRC_P]) == 1) {
+	if (count($a_userBindings[Mantis2mitePlugin::API_RSRC_P]) == 1) {
     	
-		$a_miteProjectId = array_keys($a_userBindings[mitePlugin::API_RSRC_P]);
+		$a_miteProjectId = array_keys($a_userBindings[Mantis2mitePlugin::API_RSRC_P]);
 		
-		$a_selectBoxesNewTimeEntry[mitePlugin::API_RSRC_P] =  
-			$a_userBindings[mitePlugin::API_RSRC_P][$a_miteProjectId[0]] ."
+		$a_selectBoxesNewTimeEntry[Mantis2mitePlugin::API_RSRC_P] =  
+			$a_userBindings[Mantis2mitePlugin::API_RSRC_P][$a_miteProjectId[0]] ."
 			<input type='hidden' name='plugin_mite_projects_new_time_entry' 
 				    value='".$a_miteProjectId[0]."' id='plugin_mite_projects_new_time_entry' />";
     }
@@ -134,13 +134,13 @@
 				<label for='plugin_mite_projects_new_time_entry'>".
 					lang_get('plugin_mite_header_projects_new_time_entry')."
 				</label>".
-				$a_selectBoxesNewTimeEntry[mitePlugin::API_RSRC_P] ."
+				$a_selectBoxesNewTimeEntry[Mantis2mitePlugin::API_RSRC_P] ."
 			</div>
 			<div class='time_entry_param'>
 				<label for='plugin_mite_services_new_time_entry'>".
 					lang_get('plugin_mite_header_services_new_time_entry')."
 				</label>".
-				$a_selectBoxesNewTimeEntry[mitePlugin::API_RSRC_S] . "
+				$a_selectBoxesNewTimeEntry[Mantis2mitePlugin::API_RSRC_S] . "
 			</div>
 			
 			<div class='time_entry_param'>
@@ -164,7 +164,7 @@
 					lang_get('plugin_mite_help_note_pattern')."</span> 
 				<input type='text' name='plugin_mite_note_new_time_entry' 
 					   id='plugin_mite_note_new_time_entry' autocomplete='off' value='".
-	stripslashes(mitePlugin::replacePlaceHolders(current_user_get_field(mitePlugin::DB_FIELD_NOTE_PATTERN),
+	stripslashes(Mantis2mitePlugin::replacePlaceHolders(current_user_get_field(Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN),
 									$i_bugId))."' />
 			</div>
 			<div class='formularButtons'>

@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 		
 	
 ############	
@@ -44,15 +44,15 @@
 		exit;
 	}
 	
-	$s_tableTimeEntries = plugin_table(mitePlugin::DB_TABLE_TE);
+	$s_tableTimeEntries = plugin_table(Mantis2mitePlugin::DB_TABLE_TE);
 	
 	$s_miteUrl = 
-		"http://".mitePlugin::decodeValue(current_user_get_field(mitePlugin::DB_FIELD_ACCOUNT_NAME)).
+		"http://".Mantis2mitePlugin::decodeValue(current_user_get_field(Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME)).
 		".mite.yo.lk/time_entries";
 	
 	$a_curlOptHeader = 
 		array('Content-Type: application/xml',
-	 		  'X-MiteApiKey: '.mitePlugin::decodeValue(current_user_get_field(mitePlugin::DB_FIELD_API_KEY)));
+	 		  'X-MiteApiKey: '.Mantis2mitePlugin::decodeValue(current_user_get_field(Mantis2mitePlugin::DB_FIELD_API_KEY)));
 	
 # build key-value array $a_data of the serialized $_POST['data'] string
 	$a_dataKeyValuePairs = explode("&",$_POST['data']);
@@ -69,7 +69,7 @@
 	if ($_POST['action'] == 'addEntry') {
 		
 		$s_note = 
-			mitePlugin::replacePlaceHolders($a_data['plugin_mite_note_new_time_entry'],
+			Mantis2mitePlugin::replacePlaceHolders($a_data['plugin_mite_note_new_time_entry'],
 				   							$a_data['plugin_mite_current_bug']);
 		
 		$m_postedTime = $a_data['plugin_mite_hours_new_time_entry'];
@@ -134,7 +134,7 @@
 			  	<service-id>%d</service-id>
 			  	<project-id>%d</project-id>
 			</time-entry>",
-		  	mitePlugin::mysqlDate($a_data['plugin_mite_date_new_time_entry']),
+		  	Mantis2mitePlugin::mysqlDate($a_data['plugin_mite_date_new_time_entry']),
 		  	intval($i_timeInMinutes),
 		  	$s_note,
 		  	intval($a_data['plugin_mite_services_new_time_entry']),
@@ -196,10 +196,10 @@
 			intval($a_data['plugin_mite_projects_new_time_entry']),
 			intval($a_data['plugin_mite_services_new_time_entry']),
 			$i_timeInMinutes,
-			mitePlugin::mysqlDate($o_responseXml->{'date-at'},true),
+			Mantis2mitePlugin::mysqlDate($o_responseXml->{'date-at'},true),
 			htmlentities($s_note,ENT_QUOTES,'UTF-8'),
-			mitePlugin::mysqlDate($o_responseXml->{'created-at'}),
-			mitePlugin::mysqlDate($o_responseXml->{'created-at'}));
+			Mantis2mitePlugin::mysqlDate($o_responseXml->{'created-at'}),
+			Mantis2mitePlugin::mysqlDate($o_responseXml->{'created-at'}));
 		$r_result = db_query_bound($s_query);
 	}
 	

@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 	
 ############
 # VARS
@@ -30,17 +30,17 @@
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	
 	$a_queries[] =  
-		"DELETE FROM ".plugin_table(mitePlugin::DB_TABLE_PS)." WHERE user_id = ".$i_userId;
+		"DELETE FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_PS)." WHERE user_id = ".$i_userId;
 	$a_queries[] =  
-		"DELETE FROM ".plugin_table(mitePlugin::DB_TABLE_PSMP)." WHERE user_id = ".$i_userId;
+		"DELETE FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP)." WHERE user_id = ".$i_userId;
 	$a_queries[] =  
-		"DELETE FROM ".plugin_table(mitePlugin::DB_TABLE_TE)." WHERE user_id = ".$i_userId;
+		"DELETE FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_TE)." WHERE user_id = ".$i_userId;
 	
-	user_set_field($i_userId,mitePlugin::DB_FIELD_CONNECT_VERIFIED, 0);
-	user_set_field($i_userId,mitePlugin::DB_FIELD_API_KEY, '');
-	user_set_field($i_userId,mitePlugin::DB_FIELD_ACCOUNT_NAME, '');
-	user_set_field($i_userId,mitePlugin::DB_FIELD_NOTE_PATTERN, '');
-	user_set_field($i_userId,mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED, 0);
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED, 0);
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_API_KEY, '');
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME, '');
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN, '');
+	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED, 0);
 	
 # execute the database queries	
 	for ($i = 0; $i < count($a_queries); $i++) {

@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	mitePlugin::initPartial();
+	Mantis2mitePlugin::initPartial();
 
 ############	
 # VARS 
@@ -38,7 +38,7 @@
 	$i_bugId = $_GET['bug_id'];
 	$i_projectId = $_GET['project_id'];
 	
-	if (current_user_get_field(mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
+	if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
 		
 		$b_userIsConnected = true;
 		
@@ -76,7 +76,7 @@
 	# get all mite projects and services of the user
 	################################################
 		$s_query = "SELECT type, name, mite_project_id , mite_service_id FROM ".
-				    	plugin_table(mitePlugin::DB_TABLE_PS).
+				    	plugin_table(Mantis2mitePlugin::DB_TABLE_PS).
 				   " WHERE user_id = ".$i_userId;							 	 
 		
 	    $r_result = db_query_bound($s_query);
@@ -86,7 +86,7 @@
 	    while ($b_userHasMiteData && ($a_row = db_fetch_array($r_result))) {
 			
 	    	$s_type = $a_row['type'];
-	    	$s_rsrcTypeFieldName = mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type];
+	    	$s_rsrcTypeFieldName = Mantis2mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type];
 	    	$a_userMiteData[$s_type][$a_row[$s_rsrcTypeFieldName]] = $a_row['name'];
 		}
 		
@@ -95,7 +95,7 @@
 	####################################	
 		$s_query = "
 			SELECT * FROM ".
-				plugin_table(mitePlugin::DB_TABLE_TE)."
+				plugin_table(Mantis2mitePlugin::DB_TABLE_TE)."
 			WHERE user_id = $i_userId AND bug_id = $i_bugId ORDER BY created_at DESC";							 	 
 		
 	    $r_result = db_query_bound($s_query);
@@ -138,9 +138,9 @@
 					</td>
 	    			<td".$s_cssClass.">".$a_row['mite_date_at']."</td>
 	    			<td".$s_cssClass.">".
-    		mitePlugin::decodeValue($a_userMiteData[mitePlugin::API_RSRC_P][$a_row['mite_project_id']])."</td>
+    		Mantis2mitePlugin::decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_P][$a_row['mite_project_id']])."</td>
 	    			<td".$s_cssClass.">".
-    		mitePlugin::decodeValue($a_userMiteData[mitePlugin::API_RSRC_S][$a_row['mite_service_id']])."</td>
+    		Mantis2mitePlugin::decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_S][$a_row['mite_service_id']])."</td>
 	    			<td".$s_cssClass." style='text-align:center'>$s_noteToggler</td>
 	    			<td class='column_hours".(($s_cssClass != '') ? ' firstRow' : '')."'>".
 	    				sprintf($s_patternTwoDigits,
