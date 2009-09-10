@@ -209,20 +209,15 @@
 				$s_output .= "</div>";
 			}			
 		}
-		elseif (($i_currentUserId == $i_userId) && $b_showOtherUsers) {
-			$s_output .= "
-				<h4>".lang_get('plugin_mite_user_time_entries')."</h4>
-				<em>".lang_get('plugin_mite_no_user_time_entries')."</em>";
-		}
 		 
 		$i_totalTimeBug += $i_totalTime;
-		$i_totalNumber += $i_counter;
-		$s_userEntries = '';
-		$i_totalTime = $i_counter = 0;	
+		$i_totalNumber  += $i_counter;
+		$s_userEntries   = '';
+		$i_totalTime 	 = $i_counter = 0;	
 	}
-		
-	if (($i_totalNumber == 0) && (!($b_showOtherUsers && $b_userIsConnected)))
-		$s_output .= "<em>".lang_get('plugin_mite_no_user_time_entries')."</em>";	
+
+	if (($i_totalNumber == 0) && ($b_userIsConnected))
+		$s_output .= "<em>".lang_get('plugin_mite_no_user_time_entries')."</em>";
 	
 # display total time off all users for this bug	
 	if ($b_showSummaryForCurrentUser && ($i_totalNumber > 0)) {
@@ -230,10 +225,10 @@
 		$s_output .= "
 			<div class='plugin_mite_time_entries_summary'>
 				<p> 
-				<em>".lang_get('plugin_mite_time_entries_sum')."</em>: ".
-					sprintf($s_patternTwoDigits,((int)($i_totalTimeBug / 60)),($i_totalTimeBug % 60)).",  
 				<em>".lang_get('plugin_mite_time_entries_number')."</em>: ".
-					$i_totalNumber."
+					$i_totalNumber.", 
+				<em>".lang_get('plugin_mite_time_entries_sum')."</em>: ".
+					sprintf($s_patternTwoDigits,((int)($i_totalTimeBug / 60)),($i_totalTimeBug % 60))."	
 				</p>
 			</div>
 		";

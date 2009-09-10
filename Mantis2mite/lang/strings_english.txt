@@ -69,7 +69,7 @@
 	
 	$s_plugin_mite_user_time_entries = 'My time entries';
 	$s_plugin_mite_time_entries_summary = 'Summary time entries';
-	$s_plugin_mite_time_entries_number = 'Number time entries';
+	$s_plugin_mite_time_entries_number = 'Time entries';
 	$s_plugin_mite_time_entries_sum = 'Total time';
 
 ########################

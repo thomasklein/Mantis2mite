@@ -7,11 +7,11 @@
 #################
 	$s_plugin_mite_title = 'Mantis2mite';
 	$s_plugin_mite_config = 'Konfiguration';
-	$s_plugin_mite_timetracks_visible_threshold_level = 'Minimales Zugangslevel um Zeiteintr√§ge 
-		von anderen Nutzern f√ºr ein Problem zu sehen';
+	$s_plugin_mite_timetracks_visible_threshold_level = 'Minimales Zugangslevel um Zeiteinträge 
+		von anderen Nutzern für ein Problem zu sehen';
 		
-	$s_plugin_mite_description = '<code>Mantis2mite</code> verkn√ºpft einen Mantis-Account 
-		mit einem <em>mite</em>.account. Zeiteintr√§ge k√∂nnen direkt auf Probleme in Mantis 
+	$s_plugin_mite_description = '<code>Mantis2mite</code> verknüpft einen Mantis-Account 
+		mit einem <em>mite</em>.account. Zeiteinträge können direkt auf Probleme in Mantis 
 		erfasst werden; automatisch werden die Zeiten dann an <em>mite</em> gesendet.';	
 	
 # user account
@@ -22,19 +22,19 @@
 		(Letztes Update <span id="plugin_mite_last_updated">%s</span>)';
 	
 	$s_plugin_mite_account_name = 'Kontoname';
-	$s_plugin_mite_api_key = 'API-Schl√ºssel';
+	$s_plugin_mite_api_key = 'API-Schlüssel';
 	
 	$s_plugin_mite_connection_unverified = '<strong>Status:</strong> Nicht verbunden';	
 	
-	$s_plugin_mite_header_preferences = 'Pr√§ferenzen';
+	$s_plugin_mite_header_preferences = 'Präferenzen';
 	
-	$s_plugin_mite_help_interconnections = 'Ausgew√§hlte <em>mite</em>.projekte / <em>mite</em>.leistungen 
-		werden an den Anfang der Auswahllisten f√ºr einen neuen Zeiteintrag gestellt. Du kannst auch 
-		meherer Leistungen ausw√§hlen, indem du beim Klicken die Strg-Taste (Windows) bzw. 
-		Apfel-Tast (Mac) gedr√ºckt h√§ltst.<br /><br /> Sprungmarken zu deinen Mantis-Projekten:';  
+	$s_plugin_mite_help_interconnections = 'Ausgewählte <em>mite</em>.projekte / <em>mite</em>.leistungen 
+		werden an den Anfang der Auswahllisten für einen neuen Zeiteintrag gestellt. Du kannst auch 
+		meherer Leistungen auswählen, indem du beim Klicken die Strg-Taste (Windows) bzw. 
+		Apfel-Tast (Mac) gedrückt hältst.<br /><br /> Sprungmarken zu deinen Mantis-Projekten:';  
 	
-	$s_plugin_mite_header_note_pattern = 'Vordefinierter Text f√ºr Notizen zu einem neuen Zeiteintrag';
-	$s_plugin_mite_help_note_pattern = 'M√∂gliche Platzhalter sind: 
+	$s_plugin_mite_header_note_pattern = 'Vordefinierter Text für Notizen zu einem neuen Zeiteintrag';
+	$s_plugin_mite_help_note_pattern = 'Mögliche Platzhalter sind: 
 		<code>{bug_id}, {bug_summary}, {bug_description}, {bug_category}, {project_id}, {project_name}, 
 		{user_id}, {user_name}</code>';
 	
@@ -46,7 +46,7 @@
 
 # time entries
 ##############
-	$s_plugin_mite_time_entries = 'Zeiteintr√§ge von <em>mite</em>';
+	$s_plugin_mite_time_entries = 'Zeiteinträge von <em>mite</em>';
 	$s_plugin_mite_link_to_settings = 'Einstellungen';
 	$s_plugin_mite_other_services = 'andere Leistungen';
 	$s_plugin_mite_other_projects = 'andere Projekte';
@@ -56,8 +56,9 @@
 	$s_plugin_mite_header_services_new_time_entry = 'Leistung';
 	$s_plugin_mite_header_hours_new_time_entry = 'Dauer';
 	$s_plugin_mite_header_note_new_time_entry = 'Notiz';
-	$s_plugin_mite_hours_help_text = '1:30 oder 1.5 f√ºr 1 Stunde 30 Minuten.';
-	$s_plugin_mite_date_help_text = 'G√ºltiges Datumsformat: <code>yyyy-mm-dd</code>';
+	$s_plugin_mite_hour
+	s_help_text = '1:30 oder 1.5 für 1 Stunde 30 Minuten.';
+	$s_plugin_mite_date_help_text = 'Gültiges Datumsformat: <code>yyyy-mm-dd</code>';
 	
 	$s_plugin_mite_time_entry_header_date_added = 'Datum';
 	$s_plugin_mite_time_entry_header_mite_note = 'Notiz';
@@ -66,41 +67,41 @@
 	$s_plugin_mite_time_entry_header_mite_hours = 'Dauer';
 	$s_plugin_mite_time_entry_header_mite_total_hours = 'Gesamt';
 	$s_plugin_mite_time_entry_user = 'Nutzer';
-	$s_plugin_mite_no_user_time_entries = 'Noch keine Zeiteintr√§ge f√ºr diesen Bug.';
+	$s_plugin_mite_no_user_time_entries = 'Noch keine Zeiteinträge für diesen Bug.';
 	
-	$s_plugin_mite_user_time_entries = 'Meine Zeiteintr√§ge';
-	$s_plugin_mite_time_entries_summary = 'Zusammenfassung Zeiteintr√§ge';
-	$s_plugin_mite_time_entries_number = 'Anzahl Zeiteintr√§ge';
+	$s_plugin_mite_user_time_entries = 'Meine Zeiteinträge';
+	$s_plugin_mite_time_entries_summary = 'Zusammenfassung Zeiteinträge';
+	$s_plugin_mite_time_entries_number = 'Zeiteinträge';
 	$s_plugin_mite_time_entries_sum = 'Erfasste Gesamtzeit';
 
 ########################
 # BUTTON AND LINK LABELS
 ########################
-	$s_plugin_mite_check_account_data = 'Daten pr√ºfen und synchronisieren';
-	$s_plugin_mite_check_account_data_active = 'Daten pr√ºfen und synchronisieren...';
-	$s_plugin_mite_save_bindings = 'Pr√§ferenzen speichern';
-	$s_plugin_mite_save_bindings_active = 'Pr√§ferenzen speichern ...';
-	$s_plugin_mite_disconnect_account_data = 'Verbindung l√∂sen';
-	$s_plugin_mite_disconnecting_account_data_active = 'Verbindung l√∂sen...';
+	$s_plugin_mite_check_account_data = 'Daten prüfen und synchronisieren';
+	$s_plugin_mite_check_account_data_active = 'Daten prüfen und synchronisieren...';
+	$s_plugin_mite_save_bindings = 'Präferenzen speichern';
+	$s_plugin_mite_save_bindings_active = 'Präferenzen speichern ...';
+	$s_plugin_mite_disconnect_account_data = 'Verbindung lösen';
+	$s_plugin_mite_disconnecting_account_data_active = 'Verbindung lösen...';
 	$s_plugin_mite_add_new_time_entry = 'Ab mit der Zeit zu <em>mite</em>';
 	$s_plugin_mite_msg_adding_new_time_entry = 'Ab mit der Zeit zu <em>mite</em>...';
-	$s_plugin_mite_show_new_time_entry_form = 'Zeiteintrag hinzuf√ºgen';
-	$s_plugin_mite_showing_new_time_entry_form = 'Zeiteintrag hinzuf√ºgen...';
+	$s_plugin_mite_show_new_time_entry_form = 'Zeiteintrag hinzufügen';
+	$s_plugin_mite_showing_new_time_entry_form = 'Zeiteintrag hinzufügen...';
 	$s_plugin_mite_cancel_adding_time_entry = 'Abbrechen';
-	$s_plugin_mite_reset_form = 'Zur√ºcksetzen';
-	$s_plugin_mite_delete_time_entry = 'L√∂schen';
-	$s_plugin_mite_deleting_time_entry = 'L√∂schen...';
+	$s_plugin_mite_reset_form = 'Zurücksetzen';
+	$s_plugin_mite_delete_time_entry = 'Löschen';
+	$s_plugin_mite_deleting_time_entry = 'Löschen...';
 	$s_plugin_mite_time_entry_show_note = 'Zeige';
-	$s_plugin_mite_change_api_key = '√Ñndern';
-	$s_plugin_mite_change_account_name = '√Ñndern';
-	$s_plugin_mite_time_show_entries_other_user = 'Zeige Zeiteintr√§ge des Nutzers';
+	$s_plugin_mite_change_api_key = 'Ändern';
+	$s_plugin_mite_change_account_name = 'Ändern';
+	$s_plugin_mite_time_show_entries_other_user = 'Zeige Zeiteinträge des Nutzers';
 	
 	
 ########################
 # PLACEHOLDERS
 ########################
-	$s_plugin_mite_loading_user_bindings = 'Lade Pr√§ferenzen...';
-	$s_plugin_mite_loading_time_entries = 'Lade Zeiteintr√§ge...';
+	$s_plugin_mite_loading_user_bindings = 'Lade Präferenzen...';
+	$s_plugin_mite_loading_time_entries = 'Lade Zeiteinträge...';
 	
 
 ########################
@@ -109,8 +110,8 @@
 	
 # user account
 ##############	
-	$s_plugin_mite_msg_success_saving_bindings = 'Deine Pr√§ferenzen wurden gespeichert.';
-	$s_plugin_mite_msg_error_saving_bindings = 'Deine Pr√§ferenzen konnten nicht
+	$s_plugin_mite_msg_success_saving_bindings = 'Deine Präferenzen wurden gespeichert.';
+	$s_plugin_mite_msg_error_saving_bindings = 'Deine Präferenzen konnten nicht
 		gespeichert werden. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
 	
 	$s_plugin_mite_msg_success_verification = 'Die Verbindung zu deinem <em>mite</em>.konto steht!<br /> 
@@ -122,64 +123,64 @@
 	$s_plugin_mite_txt_error_updating_account_data = 'Deine Daten konnten nicht
 		aktualisiert werden. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';
 		
-	$s_plugin_mite_msg_database_Fehler = 'Es gab einen Datenbankfehler w√§hrend 
-		der Ausf√ºhrung des Skriptes. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
+	$s_plugin_mite_msg_database_Fehler = 'Es gab einen Datenbankfehler während 
+		der Ausführung des Skriptes. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
 		
 	$s_plugin_mite_msg_error_verification = 'Die Verbindung konnte nicht hergestellt 
-		werden. Bitte √ºberpr√ºfe noch einmal deine Daten.';
+		werden. Bitte überprüfe noch einmal deine Daten.';
 	
 	$s_plugin_mite_msg_missing_account_data = 'Du hast vergessen deine Kontodaten anzugeben.';
 	
 	$s_plugin_mite_msg_error_disconnecting_account = 'Konnte die Verbindung zu
-		deinem <em>mite</em>.konto nicht l√∂sen. Eine detailierte Fehlermeldung findest du in der 
+		deinem <em>mite</em>.konto nicht lösen. Eine detailierte Fehlermeldung findest du in der 
 		Javascript Konsole.';
 	
 	$s_plugin_mite_msg_confirm_disconnecting_account = 'Bist du dir sicher, dass du die Verbindung zu deinen
-		mite.konto l√∂sen m√∂chtest? Deine gespeicherten Daten werden dabei aus Mantis gel√∂scht.';
+		mite.konto lösen möchtest? Deine gespeicherten Daten werden dabei aus Mantis gelöscht.';
 		
 	$s_plugin_mite_msg_success_disconnecting_account = 'Die Verbindung zu deinem 
-		<em>mite</em>.konto wurde erfolgreich gel√∂st. Alle deine gespeicherten Daten zu diesem Plugin 
-		sind jetzt aus Mantis gel√∂scht.';
+		<em>mite</em>.konto wurde erfolgreich gelöst. Alle deine gespeicherten Daten zu diesem Plugin 
+		sind jetzt aus Mantis gelöscht.';
 		
-	$s_plugin_mite_msg_error_loading_binding_area = 'Deine Pr√§ferenzen konnten nicht 
+	$s_plugin_mite_msg_error_loading_binding_area = 'Deine Präferenzen konnten nicht 
 		geladen werden. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
 		
 # time entries
 ##############		
 	$s_plugin_mite_msg_error_adding_time_entry_fnf = 'Zeiteintrag konnte nicht 
-		hinzugef√ºgt werden. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';
+		hinzugefügt werden. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';
 	
 	$s_plugin_mite_msg_error_adding_time_entry = 'Zeiteintrag konnte nicht 
-		hinzugef√ºgt werden';
+		hinzugefügt werden';
 	
-	$s_plugin_mite_msg_error_loading_time_entries_fnf = 'Zeiteintr√§ge f√ºr dieses
+	$s_plugin_mite_msg_error_loading_time_entries_fnf = 'Zeiteinträge für dieses
 		Problem konnten nicht geladen werden. Eine detailierte Fehlermeldung findest du in der 
 		Javascript Konsole.';
 		
 	$s_plugin_mite_msg_success_adding_time_entry = 'Ein neuer Zeiteintrag wurde 
-		hinzugef√ºgt.';
+		hinzugefügt.';
 		
-	$s_plugin_mite_invalid_time_format = 'Dein Zeitformat wird nicht unterst√ºtzt.
-		Ein g√ºltiges Zeitformat ist z.B. 1:30 oder 1.5 f√ºr 1 Stunde 30 Minuten.';
+	$s_plugin_mite_invalid_time_format = 'Dein Zeitformat wird nicht unterstützt.
+		Ein gültiges Zeitformat ist z.B. 1:30 oder 1.5 für 1 Stunde 30 Minuten.';
 		
 	$s_plugin_mite_msg_missing_time_entry_hours = 'Du musst einen Wert bei Dauer
-		festlegen. Die Stoppuhrfunktion von <em>mite</em> wird nicht unterst√ºtzt.';
+		festlegen. Die Stoppuhrfunktion von <em>mite</em> wird nicht unterstützt.';
 		
-	$s_plugin_mite_msg_close_message = 'Nachricht schlie√üen';	
+	$s_plugin_mite_msg_close_message = 'Nachricht schließen';	
 	
-	$s_plugin_mite_confirm_deleting_time_entry = 'Bist du sicher, dass du diesen Zeiteintrag l√∂schen 
-		m√∂chtest?';
+	$s_plugin_mite_confirm_deleting_time_entry = 'Bist du sicher, dass du diesen Zeiteintrag löschen 
+		möchtest?';
 		
 	$s_plugin_mite_msg_error_deleting_time_entry_fnf = 'Konnte den Zeiteintrag 
-		nicht l√∂schen. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
+		nicht löschen. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	
 	
-	$s_plugin_mite_msg_success_deleting_time_entry = 'Der Zeiteintrag wurde gel√∂scht.';
+	$s_plugin_mite_msg_success_deleting_time_entry = 'Der Zeiteintrag wurde gelöscht.';
 		
 	$s_plugin_mite_msg_error_deleting_time_entry = 'Konnte den Zeiteintrag 
-		nicht l√∂schen.';
+		nicht löschen.';
 	
-	$s_plugin_mite_msg_error_invalid_date = 'Dein Datumsformat ist ung√ºltig. 
-		Bitte schaue dir den Hilfetext f√ºr den korrekten Aufbau an.';	
+	$s_plugin_mite_msg_error_invalid_date = 'Dein Datumsformat ist ungültig. 
+		Bitte schaue dir den Hilfetext für den korrekten Aufbau an.';	
 		
 		
 ?>
