@@ -95,13 +95,11 @@
 	$s_plugin_mite_change_account_name = 'Ändern';
 	$s_plugin_mite_time_show_entries_other_user = 'Zeige Zeiteinträge des Nutzers';
 	
-	
 ########################
 # PLACEHOLDERS
 ########################
 	$s_plugin_mite_loading_user_bindings = 'Lade Präferenzen...';
 	$s_plugin_mite_loading_time_entries = 'Lade Zeiteinträge...';
-	
 
 ########################
 # ACTION-BASED MESSAGES 
@@ -176,8 +174,7 @@
 	
 	$s_plugin_mite_msg_success_deleting_time_entry = 'Der Zeiteintrag wurde gelöscht.';
 		
-	$s_plugin_mite_msg_error_deleting_time_entry = 'Konnte den Zeiteintrag 
-		nicht löschen.';
+	$s_plugin_mite_msg_error_deleting_time_entry = 'Konnte den Zeiteintrag nicht löschen.';
 	
 	$s_plugin_mite_msg_error_invalid_date = 'Dein Datumsformat ist ungültig. 
 		Bitte schaue dir den Hilfetext für den korrekten Aufbau an.';		

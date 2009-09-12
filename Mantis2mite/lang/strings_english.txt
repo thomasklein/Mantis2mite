@@ -122,7 +122,7 @@
 	$s_plugin_mite_msg_database_error = 'There was an database error when 
 		trying to execute the script. Please check the javascript console for a detailed error message.';	
 		
-	$s_plugin_mite_msg_error_verification = 'Could not connect to your mite account. 
+	$s_plugin_mite_msg_error_verification = 'Could not connect to your <em>mite</em> account. 
 		Please recheck your account data.';
 	
 	$s_plugin_mite_msg_missing_account_data = 'You forgot to provide your account data.';
