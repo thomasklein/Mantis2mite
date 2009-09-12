@@ -172,8 +172,5 @@
 		Could not delete the time entry.';
 	
 	$s_plugin_mite_msg_error_invalid_date = '
-		Your date format is invalid. Please refer to the help text to see the valid structure.';	
-		
-		
-		
+		Your date format is invalid. Please refer to the help text to see the valid structure.';
 ?>

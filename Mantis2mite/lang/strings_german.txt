@@ -180,7 +180,5 @@
 		nicht löschen.';
 	
 	$s_plugin_mite_msg_error_invalid_date = 'Dein Datumsformat ist ungültig. 
-		Bitte schaue dir den Hilfetext für den korrekten Aufbau an.';
-		
-		
+		Bitte schaue dir den Hilfetext für den korrekten Aufbau an.';		
 ?>
