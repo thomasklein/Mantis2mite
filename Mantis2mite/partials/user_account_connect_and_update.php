@@ -50,17 +50,17 @@
 	
 # PROJECTS AND SERVICES synchronisation
 #######################################
-	foreach (Mantis2mitePlugin::$a_miteResources as $s_rsrc) {
+	foreach (Mantis2mitePlugin::$a_miteResources as $s_rsrcType => $s_rsrcName) {
 		
 	# time entries are handled later on	
-		if(($s_rsrcName == Mantis2mitePlugin::API_RSRC_TEP) || 
-		   ($s_rsrcName == Mantis2mitePlugin::API_RSRC_TE)) {
+		if(($s_rsrcType == Mantis2mitePlugin::API_RSRC_TEP) || 
+		   ($s_rsrcType == Mantis2mitePlugin::API_RSRC_TE)) {
 			
 			continue;
 		}
 		
 		try {
-		 	if (!$o_miteRemote->sendRequest('get',$s_rsrcName.".xml")) {
+		 	if (!$o_miteRemote->sendRequest('get',$s_rsrcName)) {
 			
 	 		# EXIT SCRIPT on errors and display errors
 				echo $o_miteRemote->getErrors();
@@ -73,48 +73,48 @@
 				
 			# get projects with the same name to append the customer name later on
 			# to better distinguish them when showing up in a selection box
-				if ($s_rsrcName == Mantis2mitePlugin::API_RSRC_P) {
+				if ($s_rsrcType == Mantis2mitePlugin::API_RSRC_P) {
 					$a_miteProjectNames[(string)$o_child->name][((int)$o_child->id)] = 
 						(string)$o_child->{'customer-name'};
 				}
 				
-				$a_miteUserData[$s_rsrcName][(int)$o_child->id] = array( 
+				$a_miteUserData[$s_rsrcType][(int)$o_child->id] = array( 
 					'name' 			  => (string)$o_child->name,
 					'mite_updated_at' => Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'}));
 			}
 			
 		# get in MANTIS saved MITE projects/services
-			$s_query = "SELECT id,name,".$a_fieldNamesMiteRsrc_id[$s_rsrcName].", mite_updated_at 
+			$s_query = "SELECT id,name,".$a_fieldNamesMiteRsrc_id[$s_rsrcType].", mite_updated_at 
 						FROM ".$s_DBTable_mps.
-					   " WHERE user_id = ".$i_userId." AND type = '".$s_rsrcName."'";
+					   " WHERE user_id = ".$i_userId." AND type = '".$s_rsrcType."'";
 			
 			$r_result = db_query_bound($s_query);
 			
-			$a_mantisMiteUserData[$s_rsrcName] = array();
+			$a_mantisMiteUserData[$s_rsrcType] = array();
 			
 			if (db_num_rows($r_result) > 0) {
 				while ($a_row = db_fetch_array($r_result)) {
-					$a_mantisMiteUserData[$s_rsrcName][$a_row[$a_fieldNamesMiteRsrc_id[$s_rsrcName]]] = $a_row;
+					$a_mantisMiteUserData[$s_rsrcType][$a_row[$a_fieldNamesMiteRsrc_id[$s_rsrcType]]] = $a_row;
 				}
 			}
 			
 		# get new entries (projects and services)
-			$a_newRsrcEntries[$s_rsrcName] = 
-				array_diff(array_keys($a_miteUserData[$s_rsrcName]),
-						   array_keys($a_mantisMiteUserData[$s_rsrcName]));
+			$a_newRsrcEntries[$s_rsrcType] = 
+				array_diff(array_keys($a_miteUserData[$s_rsrcType]),
+						   array_keys($a_mantisMiteUserData[$s_rsrcType]));
 			
 		# get deleted entries (projects and services)
-			$a_rsrcEntriesToDelete[$s_rsrcName] = 
-				array_diff(array_keys($a_mantisMiteUserData[$s_rsrcName]),
-						   array_keys($a_miteUserData[$s_rsrcName]));
+			$a_rsrcEntriesToDelete[$s_rsrcType] = 
+				array_diff(array_keys($a_mantisMiteUserData[$s_rsrcType]),
+						   array_keys($a_miteUserData[$s_rsrcType]));
 			
 		# get possibly updated entries (projects and services)				   
-			$a_rsrcEntriesPossiblyModified[$s_rsrcName] = 
-				array_intersect(array_keys($a_mantisMiteUserData[$s_rsrcName]),
-							  	array_keys($a_miteUserData[$s_rsrcName]));	
+			$a_rsrcEntriesPossiblyModified[$s_rsrcType] = 
+				array_intersect(array_keys($a_mantisMiteUserData[$s_rsrcType]),
+							  	array_keys($a_miteUserData[$s_rsrcType]));	
 			
 		} catch (Exception $e) {
-			$a_errors[$s_rsrcName][] = $e->getMessage();
+			$a_errors[$s_rsrcType][] = $e->getMessage();
 		}				  	
 	}//end of foreach loop	
 	

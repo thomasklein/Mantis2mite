@@ -138,10 +138,10 @@ class Mantis2mitePlugin extends MantisPlugin {
  * @public array containing patterns for api data structures to obtain from mite
  */
 	public static $a_miteResources = 
-		array(self::API_RSRC_P,
-			  self::API_RSRC_S,
-			  self::API_RSRC_TEP,
-			  self::API_RSRC_TE
+		array(self::API_RSRC_P   => 'projects.xml',
+			  self::API_RSRC_S   => 'services.xml',
+			  self::API_RSRC_TEP => 'time_entries.xml?project-id=%s',
+			  self::API_RSRC_TE  => 'time_entries/%s.xml'
 			  );
 	
 /**
@@ -173,7 +173,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 		$this->name        = 'Mantis2<em>mite</em>';
 		$this->description = lang_get('plugin_mite_description');
 		$this->page = 'config';
-		$this->version     = '1.0';
+		$this->version     = '1.1';
 		$this->requires    = array('MantisCore'=> '1.2.0');
 		$this->author      = 'Thomas Klein';
 		$this->contact     = 'thomas.klein83@gmail.com';
