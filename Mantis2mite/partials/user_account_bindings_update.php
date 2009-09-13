@@ -13,8 +13,8 @@
 /*
  * @local arrays
  */
-	$a_userMantisProjects = $a_userBindings = $a_userSelectedBindings = $a_modifiedUserBindings = 
-	$a_queries = array();
+	$a_userProject_ids = $a_userMiteBindings = $a_userSelectedBindings = $a_modifiedUserBindings = 
+	$a_queries = $a_newProjectsBindings = array();
 /*
  * @local int
  */	
@@ -39,41 +39,14 @@
 									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
 	$s_DBTable_mpsmp = plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP);
 	
-# select MANTIS projects of the user
-####################################
-	$s_query = "SELECT a.id FROM ".db_get_table('mantis_project_table')." a ".
-			   "JOIN ".db_get_table('mantis_project_user_list_table')." b ".
-			   "ON b.user_id=".$i_userId." AND a.id = b.project_id";
-		
-	$r_result = db_query_bound($s_query);
+	$o_userMiteData = Mantis2mitePlugin::getMiteUserData();
+	$a_userMiteBindings = $o_userMiteData->getBindingsByMantisProject();
 	
-	if (db_num_rows($r_result) > 0) {
-		while ($a_row = db_fetch_array($r_result)) {
-			$a_userMantisProjects[] = $a_row['id'];
-		}
-	}
-	
-# select MITE - MANTIS bindings of the user
-###########################################
-	$s_query = "SELECT type, mite_project_id, mite_service_id, mantis_project_id FROM ".
-					plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP).
-			   " WHERE user_id=".$i_userId;
-		
-	$r_result = db_query_bound($s_query);
-	
-	if (db_num_rows($r_result) > 0) {
-		
-		while ($a_row = db_fetch_array($r_result)) {
-			
-			$s_type = $a_row['type'];
-			$i_dataId = $a_row[$a_fieldNamesMiteRsrc_id[$s_type]];
-			$a_userBindings[$a_row['mantis_project_id']][$s_type][] = $i_dataId;
-		}
-	}
+	$a_userProject_ids = user_get_all_accessible_projects($i_userId,ALL_PROJECTS);
 	
 # get all bindings selected on the form
 #######################################
-	foreach ($a_userMantisProjects as $i_projectId) {
+	foreach ($a_userProject_ids as $i_projectId) {
 		
 	# get MITE project to MANTIS project bindings	
 		if (isset($_POST['sb_plugin_mite_projects_mantis_project_' . $i_projectId])) {
@@ -99,10 +72,10 @@
 # get new MITE project/services to MANTIS project bindings 	
 # and build queries to INSERT them
 ##########################################################
-	$a_newProjectsWithBindings = array_diff(array_keys($a_userSelectedBindings),
-			       					     	array_keys($a_userBindings));
+	$a_newProjectsBindings = array_diff(array_keys($a_userSelectedBindings),
+			       					    array_keys($a_userMiteBindings));
 	
-	foreach ($a_newProjectsWithBindings as $i_projectId) {
+	foreach ($a_newProjectsBindings as $i_projectId) {
 		
 		$a_project = $a_userSelectedBindings[$i_projectId];	   
 		
@@ -121,13 +94,13 @@
 # get updated MITE project/services to MANTIS project bindings 	
 # and build queries to INSERT new MITE project/services and DELETE removed bindings
 ###################################################################################	
-	$a_updatedProjectBindings = array_intersect(array_keys($a_userBindings),
+	$a_updatedProjectBindings = array_intersect(array_keys($a_userMiteBindings),
 										   		array_keys($a_userSelectedBindings));
 
 	foreach ($a_updatedProjectBindings as $i_updatedProject) {
 		
 		$a_updatedPB = $a_userSelectedBindings[$i_updatedProject]; //updated project bindings
-		$a_oldPB = $a_userBindings[$i_updatedProject];// old project bindings
+		$a_oldPB = $a_userMiteBindings[$i_updatedProject];// old project bindings
 		
 		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
 		
@@ -163,12 +136,12 @@
 # get removed MITE project/services to MANTIS project bindings 	
 # and build queries to DELETE the removed bindings
 ###################################################################################
-	$a_deletedProjectBindings = array_diff(array_keys($a_userBindings),
+	$a_deletedProjectBindings = array_diff(array_keys($a_userMiteBindings),
 										   array_keys($a_userSelectedBindings));
 	
 	foreach ($a_deletedProjectBindings as $i_removedProjectId) {
 		
-		$a_project = $a_userBindings[$i_removedProjectId];
+		$a_project = $a_userMiteBindings[$i_removedProjectId];
 		
 		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
 			
@@ -185,16 +158,24 @@
 		}
 	}
 	
+	
+	/*echo "<p>".__FILE__."-".__LINE__.": ".print_r($a_updatedProjectBindings)."</p>\n";
+	echo "<p>".__FILE__."-".__LINE__.": ".print_r($a_deletedProjectBindings)."</p>\n";*/
+	
+	
 # execute the database queries	
 	for ($i = 0; $i < count($a_queries); $i++) {
 		$r_result = db_query_bound($a_queries[$i]);
 	}
 	
-	# save the API key				   
+	# save the field for the notes pattern				   
 	user_set_field($i_userId,
 				   Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN,
 				   $_POST[Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN]);
 	
+# force re-initialization of session stored user values	
+	session_set('plugin_mite_status_session_vars','reinit');
+	Mantis2mitePlugin::initMiteObjects();
 		
 	echo "<messages datetimestamp='".gmdate('Y-m-d H:i:s')."'>" . $s_xmlMsg . "</messages>";	
 ?>

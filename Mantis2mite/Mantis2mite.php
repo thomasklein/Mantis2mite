@@ -1,8 +1,11 @@
 <?php
-/* Mantis2mite plugin for MantisBT
+/* CLASS Mantis2mite
+ * 
+ * Mantis2mite plugin for MantisBT
  * 
  * mite is an sleek time tracking tool for team and freelancers: http://mite.yo.lk
  * 
+ * @package Mantis2mite
  * @author Thomas Klein (thomas.klein83@gmail.com)
  * @licence MIT license
  * @description Connects your Mantis account with your mite.account. 
@@ -25,7 +28,9 @@
 # You should have received a copy of the GNU General Public License
 # along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
+require_once(config_get('class_path').'MantisPlugin.class.php');
+require_once('classes/miteUserData.class.php');
+require_once('classes/miteRemote.class.php');
 
 class Mantis2mitePlugin extends MantisPlugin {
 	
@@ -133,12 +138,27 @@ class Mantis2mitePlugin extends MantisPlugin {
  * @public array containing patterns for api data structures to obtain from mite
  */
 	public static $a_miteResources = 
-		array(self::API_RSRC_P   => 'https://%s.mite.yo.lk/projects.xml?api_key=%s',
-			  self::API_RSRC_S   => 'https://%s.mite.yo.lk/services.xml?api_key=%s',
-			  self::API_RSRC_TEP => 'https://%s.mite.yo.lk/time_entries.xml?project-id=%s&api_key=%s',
-			  self::API_RSRC_TE  => 'https://%s.mite.yo.lk/time_entries/%s.xml?api_key=%s'
+		array(self::API_RSRC_P,
+			  self::API_RSRC_S,
+			  self::API_RSRC_TEP,
+			  self::API_RSRC_TE
 			  );
-
+	
+/**
+ * Contains the current users MITE data: projects, services, bindings to Mantis projects
+ *
+ * @public static object
+ */
+  	private static $o_miteUserData;
+  	
+/**
+ * Provides methods to communicate with the MITE API
+ *
+ * @public static object
+ */
+  	private static $o_miteRemote;
+  	
+			  
 ############	
 # METHODS
 #######	
@@ -348,7 +368,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 		
 		plugin_event_hook_many(array(
 			'EVENT_PLUGIN_INIT' => 'setEventHooks',
-			'EVENT_CORE_READY'  => 'checkSessionStatus'
+			'EVENT_CORE_READY'  => 'initPlugin'
 		));
 	}//init
 	
@@ -367,33 +387,13 @@ class Mantis2mitePlugin extends MantisPlugin {
     	plugin_event_hook('EVENT_LAYOUT_RESOURCES','insertLayoutResources');
 	}//setEventHooks
 	
-	
-/****************************************************
- * only if the user is logged in and has verified the connection to a MITE account
- * fill session with MITE data of the user once and refill it if requested
- */	
-	public function checkSessionStatus() {
-		
-	# do nothing if the user is not logged in	
-		if (!auth_get_current_user_cookie()) return;	
-		
-	# only fill session with user data, if there's a user currently logged in	
-		if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
-			
-			if (!@session_get_string('plugin_mite_status_session_vars')) {
-				session_set('plugin_mite_status_session_vars','init');
-			}
-				
-			if ((session_get_string('plugin_mite_status_session_vars') == 'init') || 
-				(session_get_string('plugin_mite_status_session_vars') == 'reinit')) {
-				
-				Mantis2mitePlugin::initSessionVars();
-				session_set('plugin_mite_status_session_vars','isCurrent');
-			}
-		}
-		
-		return true;
-	}//checkSessionStatus
+/**
+ * Enter description here...
+ *
+ */
+	public function initPlugin() {
+		self::initMiteObjects();
+	}//initPlugin
 	
 	
 /****************************************************
@@ -458,7 +458,6 @@ class Mantis2mitePlugin extends MantisPlugin {
 	
   
 /*****************************************************
- * @CALLBACK MANTIS EVENT
  * Adds a link in the user account preferences to configure the plugin
  */
 	function addConfigLink_userAccount($i_eventType,$params) {
@@ -467,7 +466,6 @@ class Mantis2mitePlugin extends MantisPlugin {
   
   	
 /*****************************************************
- * @CALLBACK MANTIS EVENT
  * Adds a row for time entries after the 'Status' row in the bug view
  */	
   	function addTimeEntryRow_bugDetail($c_eventName,$i_bugId, $b_advancedView) {
@@ -569,6 +567,73 @@ class Mantis2mitePlugin extends MantisPlugin {
 # CLASS METHODS
 ###################################		
 	
+/****************************************************
+ * only if the user is logged in and has verified the connection to a MITE account
+ * inits 
+ * - $o_miteUserData: containting MITE data and bindings of the user
+ * - $o_miteRemote: neccessary to send requests to the MITE API
+ * 
+ * @return boolean
+ */	
+	public static function initMiteObjects() {
+		
+	# do nothing if the user is not logged in	
+		if (!auth_get_current_user_cookie()) return;
+		
+	# only fill session with user data, if there's a user currently logged in	
+		if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
+			
+			self::$o_miteUserData = new miteUserData(auth_get_current_user_id());
+			self::$o_miteRemote = new miteRemote(self::getDecodedUserValue(self::DB_FIELD_API_KEY),
+												 self::getDecodedUserValue(self::DB_FIELD_ACCOUNT_NAME));
+			
+		}
+		return true;
+	}//initMiteObjects
+  	
+  	
+  	
+/****************************************************
+ * returns an object providing methods to communicate with the MITE API 
+ *
+ * @return object 
+ */
+	public static function getMiteRemote() {
+		
+		return self::$o_miteRemote;
+	}
+	
+
+/****************************************************
+ * returns an object to containing all relevant values for Mantis2mite for the current user
+ *
+ * @return object 
+ */
+	public static function getMiteUserData() {
+		
+		return self::$o_miteUserData;
+	}//getMiteUserData
+	
+	
+/****************************************************
+ * Searches for the user value $s_name and applies decodeValue() on it if available
+ *
+ * @param string $s_name
+ * 
+ * @return boolean|string false if the value does not exist or the value 
+ */
+	private static function getDecodedUserValue($s_name) {
+		
+	# supress Mantis warning in case the values does not exist	
+		$s_value = @current_user_get_field($s_name);
+
+		if($s_name) return self::decodeValue($s_value);
+		
+		else return false;
+		
+	}//getDecodedUserValue
+  	
+  	
 /*****************************************************
  * This method is called from a partial.
  * It checks if the partial was called with an AJAX request 
@@ -587,57 +652,6 @@ class Mantis2mitePlugin extends MantisPlugin {
 		
 		plugin_push_current("Mantis2mite");
 	}//initPartial
-	
-	
-/****************************************************
- * Stores frequently used used data from the database in the session
- */		
-	static function initSessionVars() {
-	
-	############	
-	# VARS 
-	#######
-	/*
-	 * @local objects/resources
-	 */
-		$r_result = null;
-	/*
-	 * @local arrays
-	 */	
-		$a_fieldNamesMiteRsrc_id = $a_mantisMiteUserData = array();
-	/*
-	 * @local strings
-	 */
-		$s_query = '';
-		
-	############	
-	# ACTION 
-	#######	
-		$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
-									 	 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
-									 
-		foreach (Mantis2mitePlugin::$a_rsrcTypes as $s_type) {
-			
-		# get MITE projects/services of the user
-			$s_query = "SELECT id,name,".$a_fieldNamesMiteRsrc_id[$s_type].", mite_updated_at 
-						FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_PS).
-					   " WHERE user_id = ".auth_get_current_user_id()." AND type = '".$s_type."'";
-			
-			$r_result = db_query_bound($s_query);
-			
-			$a_miteUserData[$s_type] = array();
-			
-			if (db_num_rows($r_result) > 0) {
-				while ($a_row = db_fetch_array($r_result)) {
-					
-					$a_miteUserData[$s_type][$a_row[$a_fieldNamesMiteRsrc_id[$s_type]]] = $a_row;
-				}
-			}		
-		}
-		
-		session_set('plugin_mite_user_projects',$a_miteUserData[Mantis2mitePlugin::API_RSRC_P]);
-		session_set('plugin_mite_user_services',$a_miteUserData[Mantis2mitePlugin::API_RSRC_S]);
-	}//initSessionVars
 		
 	
 /*****************************************************
@@ -690,51 +704,6 @@ class Mantis2mitePlugin extends MantisPlugin {
 		return base64_decode($s_value);
 	}//decodeValue
 	
-	
-/*****************************************************
- * Decodes each property $s_fieldName in $a_values and returns an array ordered by 
- * the property $s_fieldName of each value
- * 
- * E.g: $a_values = array(1 => array('name' => 'B'), 2 => array('name' => 'A'))
- * whereas $s_fieldName = 'name'
- * the function returns
- * 	array(2 => array('name' => 'A'), 1 => array('name' => 'B'))
- * 
- * @param array multideimensional array 
- * contains a list of entries; key is the id and value are the properties of this entry
- * @param string property to compare agains
- * 
- * @return array
- */	
-	static function decodeAndOrderByValue($a_values,$s_fieldName) {
-		
-	/*
-	 * @local array
-	 */	
-		$a_orderedValues = array();
-		
-		foreach ($a_values as $i_id => $a_props) {
-			
-			
-			if (isset($a_props[$s_fieldName]))
-				$a_props[$s_fieldName] = Mantis2mitePlugin::decodeValue($a_props[$s_fieldName]);
-			
-			$a_orderedValues[$i_id] = $a_props;
-		}
-		
-		uasort($a_orderedValues,array("Mantis2mitePlugin", "cmpByName"));
-		
-		return $a_orderedValues;
-	}//decodeAndOrderByValue
-	
-	
-/*****************************************************
- * Custom function to compare the property 'name' of two arrays
- */	
-	static function cmpByName($a, $b) {
-		
-		return strcmp($a["name"], $b["name"]);
-	}//cmp
 	
 /*****************************************************
  * Replaces defined placeholders in $s_text by their values

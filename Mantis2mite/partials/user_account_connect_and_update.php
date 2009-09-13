@@ -1,6 +1,6 @@
 <?php
 	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();	 	
+	Mantis2mitePlugin::initPartial();
 
 ############
 # VARS
@@ -43,76 +43,79 @@
 	$i_userId = auth_get_current_user_id();
 	$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
 									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
+									 
+	$o_miteRemote = new miteRemote($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY],
+								   $_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]);
+	
 	
 # PROJECTS AND SERVICES synchronisation
 #######################################
-	foreach (Mantis2mitePlugin::$a_miteResources as $s_type => $s_rsrcPattern) {
+	foreach (Mantis2mitePlugin::$a_miteResources as $s_rsrc) {
 		
 	# time entries are handled later on	
-		if(($s_type == Mantis2mitePlugin::API_RSRC_TEP) || ($s_type == Mantis2mitePlugin::API_RSRC_TE)) continue;
-		
-		$s_apiURL = sprintf($s_rsrcPattern,
-							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]),
-							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]));
-		
-	# get MITE data of the user from the api	
-		if (TRUE == ($s_content = @file_get_contents($s_apiURL))) {
+		if(($s_rsrcName == Mantis2mitePlugin::API_RSRC_TEP) || 
+		   ($s_rsrcName == Mantis2mitePlugin::API_RSRC_TE)) {
 			
-			$o_xml = simplexml_load_string($s_content);
+			continue;
+		}
+		
+		try {
+		 	if (!$o_miteRemote->sendRequest('get',$s_rsrcName.".xml")) {
 			
+	 		# EXIT SCRIPT on errors and display errors
+				echo $o_miteRemote->getErrors();
+				exit;
+			}
+			
+			$o_xml = $o_miteRemote->getReponseXML();
+		
 			foreach ($o_xml->children() as $o_child) {
 				
 			# get projects with the same name to append the customer name later on
 			# to better distinguish them when showing up in a selection box
-				if ($s_type == Mantis2mitePlugin::API_RSRC_P) {
+				if ($s_rsrcName == Mantis2mitePlugin::API_RSRC_P) {
 					$a_miteProjectNames[(string)$o_child->name][((int)$o_child->id)] = 
 						(string)$o_child->{'customer-name'};
 				}
 				
-				$a_miteUserData[$s_type][(int)$o_child->id] = array( 
+				$a_miteUserData[$s_rsrcName][(int)$o_child->id] = array( 
 					'name' 			  => (string)$o_child->name,
 					'mite_updated_at' => Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'}));
 			}
-		}
-	# !!! STOP THE EXECUTION OF THE FOREACH LOOP !!! and check the other urls  	
-	# since we couldn't connect to the users services/projects it means 
-	# the connection is broken or the provided MITE account data is wrong
-	#############################################################################
-		else {
-			$a_errors[$s_type][] = "Could not retrieve data from <em>".$s_apiURL."</em>";
-			continue;
-		}
-		
-	# get in MANTIS saved MITE projects/services
-		$s_query = "SELECT id,name,".$a_fieldNamesMiteRsrc_id[$s_type].", mite_updated_at 
-					FROM ".$s_DBTable_mps.
-				   " WHERE user_id = ".$i_userId." AND type = '".$s_type."'";
-		
-		$r_result = db_query_bound($s_query);
-		
-		$a_mantisMiteUserData[$s_type] = array();
-		
-		if (db_num_rows($r_result) > 0) {
-			while ($a_row = db_fetch_array($r_result)) {
-				$a_mantisMiteUserData[$s_type][$a_row[$a_fieldNamesMiteRsrc_id[$s_type]]] = $a_row;
+			
+		# get in MANTIS saved MITE projects/services
+			$s_query = "SELECT id,name,".$a_fieldNamesMiteRsrc_id[$s_rsrcName].", mite_updated_at 
+						FROM ".$s_DBTable_mps.
+					   " WHERE user_id = ".$i_userId." AND type = '".$s_rsrcName."'";
+			
+			$r_result = db_query_bound($s_query);
+			
+			$a_mantisMiteUserData[$s_rsrcName] = array();
+			
+			if (db_num_rows($r_result) > 0) {
+				while ($a_row = db_fetch_array($r_result)) {
+					$a_mantisMiteUserData[$s_rsrcName][$a_row[$a_fieldNamesMiteRsrc_id[$s_rsrcName]]] = $a_row;
+				}
 			}
-		}
-		
-	# get new entries (projects and services)
-		$a_newRsrcEntries[$s_type] = 
-			array_diff(array_keys($a_miteUserData[$s_type]),
-					   array_keys($a_mantisMiteUserData[$s_type]));
-		
-	# get deleted entries (projects and services)
-		$a_rsrcEntriesToDelete[$s_type] = 
-			array_diff(array_keys($a_mantisMiteUserData[$s_type]),
-					   array_keys($a_miteUserData[$s_type]));
-		
-	# get possibly updated entries (projects and services)				   
-		$a_rsrcEntriesPossiblyModified[$s_type] = 
-			array_intersect(array_keys($a_mantisMiteUserData[$s_type]),
-						  	array_keys($a_miteUserData[$s_type]));
-						  	
+			
+		# get new entries (projects and services)
+			$a_newRsrcEntries[$s_rsrcName] = 
+				array_diff(array_keys($a_miteUserData[$s_rsrcName]),
+						   array_keys($a_mantisMiteUserData[$s_rsrcName]));
+			
+		# get deleted entries (projects and services)
+			$a_rsrcEntriesToDelete[$s_rsrcName] = 
+				array_diff(array_keys($a_mantisMiteUserData[$s_rsrcName]),
+						   array_keys($a_miteUserData[$s_rsrcName]));
+			
+		# get possibly updated entries (projects and services)				   
+			$a_rsrcEntriesPossiblyModified[$s_rsrcName] = 
+				array_intersect(array_keys($a_mantisMiteUserData[$s_rsrcName]),
+							  	array_keys($a_miteUserData[$s_rsrcName]));	
+			
+		} catch (Exception $e) {
+			$a_errors[$s_rsrcName][] = $e->getMessage();
+		}				  	
 	}//end of foreach loop	
 	
 	
@@ -136,67 +139,66 @@
 # and check available entries in MANTIS for change	
 	foreach ($a_mantisTimeEntries as $i_miteProjectId => $a_timeEntries) {
 		
-		$s_apiURL = sprintf(Mantis2mitePlugin::$a_miteResources[Mantis2mitePlugin::API_RSRC_TEP],
-							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]),
-							intval($i_miteProjectId),
-							urlencode($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]));
-
-		if (FALSE == ($s_content = @file_get_contents($s_apiURL))) {
-			$a_errors[Mantis2mitePlugin::API_RSRC_TEP][] = "Could not retrieve data from <em>".$s_apiURL."</em>";
-			break;
-		}
-				
-		$o_xml = simplexml_load_string($s_content);
+		try {
+			if (!$o_miteRemote->sendRequest('get',
+											'time_entries.xml?project-id='.intval($i_miteProjectId))){
+			
+			# EXIT SCRIPT on errors and display errors
+				echo $o_miteRemote->getErrors();
+				exit;
+			}
+											
+			$o_xml = $o_miteRemote->getReponseXML();
 		
-		foreach ($a_timeEntries as $a_timeEntry) {
-			
-			$b_foundMantisTimeEntry = false;
-			
-			foreach ($o_xml->children() as $o_child) {
+			foreach ($a_timeEntries as $a_timeEntry) {
 				
-			# found the time entry	
-				if ($a_timeEntry['mite_time_entry_id'] == ((int)$o_child->id)) {
+				$b_foundMantisTimeEntry = false;
+				
+				foreach ($o_xml->children() as $o_child) {
 					
-					$b_foundMantisTimeEntry = true;
-					
-					$s_miteTimeEntryUpdated = 
-						Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'});
+				# found the time entry	
+					if ($a_timeEntry['mite_time_entry_id'] == ((int)$o_child->id)) {
 						
-					if ($a_timeEntry['updated_at'] != $s_miteTimeEntryUpdated) {
+						$b_foundMantisTimeEntry = true;
 						
-						$a_mantisTimeEntriesToUpdate[$a_timeEntry['id']] = array(
-							"updated_at" 	  => $s_miteTimeEntryUpdated,
-							"mite_date_at" 	  => (string)$o_child->{'date-at'},
-							"mite_note" 	  => (string)$o_child->{'note'},
-							"mite_project_id" => (int)$o_child->{'project-id'},
-							"mite_service_id" => (int)$o_child->{'service-id'});
+						$s_miteTimeEntryUpdated = 
+							Mantis2mitePlugin::mysqlDate((string)$o_child->{'updated-at'});
+							
+						if ($a_timeEntry['updated_at'] != $s_miteTimeEntryUpdated) {
+							
+							$a_mantisTimeEntriesToUpdate[$a_timeEntry['id']] = array(
+								"updated_at" 	  => $s_miteTimeEntryUpdated,
+								"mite_date_at" 	  => (string)$o_child->{'date-at'},
+								"mite_note" 	  => (string)$o_child->{'note'},
+								"mite_project_id" => (int)$o_child->{'project-id'},
+								"mite_service_id" => (int)$o_child->{'service-id'});
+						}
 					}
 				}
-			}
+				
+				if (!$b_foundMantisTimeEntry)
+					$a_mantisTimeEntriesNotFound[$a_timeEntry['mite_time_entry_id']] = $a_timeEntry['id'];
+			}			
 			
-			if (!$b_foundMantisTimeEntry)
-				$a_mantisTimeEntriesNotFound[$a_timeEntry['mite_time_entry_id']] = $a_timeEntry['id'];
-		}					
+		} catch (Exception $e) {
+			$a_errors[$s_type][] = $e->getMessage();
+		}		
 	}
 	
-# check each time entry not found separately to find out if it was deletet or just moved to another project	
+# check each time entry not found separately to find out 
+# if it was deletet or just moved to another project	
 	foreach ($a_mantisTimeEntriesNotFound as $i_miteTimeEntryId => $i_mantisTimeEntryId) {
 		
-		$s_apiURL = sprintf(Mantis2mitePlugin::$a_miteResources[Mantis2mitePlugin::API_RSRC_TE],
-							$_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME],
-							$i_miteTimeEntryId,
-							$_POST[Mantis2mitePlugin::DB_FIELD_API_KEY]);
+		try {
+			if (!$o_miteRemote->sendRequest('get','time_entries/'.$i_miteTimeEntryId)) {
 
-	# if the entry does not exist anymore, delete it from the MANTIS database 						
-		if (FALSE == ($s_content = @file_get_contents($s_apiURL))) {
+			# EXIT SCRIPT on errors and display errors
+				echo $o_miteRemote->getErrors();
+				exit;
+			}
 			
-			$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
-			$a_queries[] = "DELETE FROM $s_tableTimeEntries WHERE id = $i_mantisTimeEntryId";
-		}
-	# if it does exist, but was moved to another project, prepare params to update the entry
-		else {
-			
-			$o_xml = simplexml_load_string($s_content);
+		# if it does exist, but was moved to another project, prepare params to update the entry	
+			$o_xml = $o_miteRemote->getReponseXML();
 			
 			$s_miteTimeEntryUpdated = 
 						Mantis2mitePlugin::mysqlDate((string)$o_xml->{'updated-at'});
@@ -207,6 +209,25 @@
 				"mite_note" 	  => (string)$o_xml->{'note'},
 				"mite_project_id" => (int)$o_xml->{'project-id'},
 				"mite_service_id" => (int)$o_xml->{'service-id'});
+			
+				
+			
+		} catch (Exception $e) {
+			
+			switch ($e->getCode()) {
+				
+			# if the entry does not exist anymore, delete it from the MANTIS database	
+				case miteRemote::MITE_REMOTE_EXCEPTION_RSRC_NOT_FOUND: 
+					
+					$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
+					$a_queries[] = "DELETE FROM $s_tableTimeEntries WHERE id = $i_mantisTimeEntryId";
+					break;
+				
+			# note error if anything went wrong with the request 		
+				default:
+					$a_errors[Mantis2mitePlugin::API_RSRC_TE][] = $e->getMessage();
+					break;
+			}
 		}
 	}
 	
@@ -367,8 +388,8 @@
 	}
 	
 # force re-initialization of session stored user values	
-	Mantis2mitePlugin::initSessionVars();
-	session_set('plugin_mite_status_session_vars','isCurrent');
+	session_set('plugin_mite_status_session_vars','reinit');
+	Mantis2mitePlugin::initMiteObjects();
 
 # return xml log messages
 	echo "<messages datetimestamp='".date('Y-m-d H:i:s')."'>" . $s_xmlMsg . "</messages>";

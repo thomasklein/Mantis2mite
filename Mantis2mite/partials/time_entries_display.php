@@ -29,7 +29,8 @@
 /*
  * @local booleans
  */
-	$b_pageHasUserTimeEnries = $b_showOtherUsers = $b_showSummaryForCurrentUser = $b_userIsConnected = false;
+	$b_pageHasUserTimeEnries = $b_showOtherUsers = $b_showSummaryForCurrentUser = 
+	$b_userIsConnected = false;
 	
 ############	
 # ACTION 

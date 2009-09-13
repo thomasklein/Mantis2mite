@@ -1,0 +1,7 @@
+Changes in version 1.1 [13.09.2009]
+
+Complete rework of version 1.0
+* introduced classes for better user data handling and higher security
+** miteRemote.class.php: provides methods to communicate with the MITE API based on the cURL library
+** miteUserData.class.php
+

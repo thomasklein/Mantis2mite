@@ -36,11 +36,15 @@
 	$a_queries[] =  
 		"DELETE FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_TE)." WHERE user_id = ".$i_userId;
 	
+# empty all database fields in the user table which are connected to the plugin	
 	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED, 0);
 	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_API_KEY, '');
 	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME, '');
 	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN, '');
 	user_set_field($i_userId,Mantis2mitePlugin::DB_FIELD_CONNECT_LAST_UPDATED, 0);
+	
+# reset session status for plugin vars	
+	session_set('plugin_mite_status_session_vars','init');
 	
 # execute the database queries	
 	for ($i = 0; $i < count($a_queries); $i++) {

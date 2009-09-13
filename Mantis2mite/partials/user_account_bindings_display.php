@@ -8,64 +8,40 @@
 /*
  * @local objects/resources
  */
-	$r_result = null;
+	$r_result = $o_userMiteData = null;
 
 /*
  * @local arrays
  */
-	$a_fieldNamesMiteRsrc_id = $a_miteUserData = $a_userBindings = $s_quickLinksList = array();
+	$a_userMiteRsrces = $a_userMiteBindings = $s_quickLinksList = $a_userProject_ids = array();
 /*
  * @local int
  */	
-	$i_userId = $i_dataId = 0;
+	$i_userId = 0;
 /*
  * @local strings
  */
-	$s_query = $s_type = $s_DBTable_mpsmp = $s_output = $s_projectsBindingOptions = '';
-
-/*
- * @local booleans
- */	
-	$b_hasMiteUserData = false;
+	$s_query = $s_type = $s_DBTable_mpsmp = $s_output = $s_projectsBindingOptions = $s_projectName = '';
 	
 ############	
 # ACTION 
 #######	
 	$i_userId = auth_get_current_user_id();
+	$a_userProject_ids = user_get_all_accessible_projects($i_userId,ALL_PROJECTS);
 	
 # !!! POSSIBLE SCRIPT EXIT !!!
-# only proceed if there are any projects assigned to the user
+# only proceed if the user has access to any of the projects
 ###############################################	
-	$s_query = "SELECT project_id FROM ".db_get_table('mantis_project_user_list_table').
-			   " WHERE user_id=".$i_userId;
-	
-	if (db_num_rows(db_query_bound($s_query)) == 0) {
+	if (empty($a_userProject_ids)) {
 		echo lang_get('plugin_mite_no_projets_assigned');
 		exit;
-	}
-		
-	$a_userMiteData[Mantis2mitePlugin::API_RSRC_P] = 
-		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_projects'),'name');
-	$a_userMiteData[Mantis2mitePlugin::API_RSRC_S] =
-		Mantis2mitePlugin::decodeAndOrderByValue(session_get('plugin_mite_user_services'),'name');
-		
-# select MITE - MANTIS bindings of the user
-###########################################
-	$s_query = "SELECT type, mite_project_id, mite_service_id, mantis_project_id FROM ".
-					plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP).
-			   " WHERE user_id=".$i_userId;
-		
-	$r_result = db_query_bound($s_query);
+	} 
+
+	$o_userMiteData = Mantis2mitePlugin::getMiteUserData();
 	
-	if (db_num_rows($r_result) > 0) {
-		
-		while ($a_row = db_fetch_array($r_result)) {
-			
-			$s_type = $a_row['type'];
-			$i_dataId = $a_row[Mantis2mitePlugin::$a_fieldNamesMiteRsrcTypes[$s_type]];
-			$a_userBindings[$s_type][$i_dataId][] = $a_row['mantis_project_id'];
-		}
-	}				
+	$a_userMiteRsrces[Mantis2mitePlugin::API_RSRC_P] = $o_userMiteData->getProjects();
+	$a_userMiteRsrces[Mantis2mitePlugin::API_RSRC_S] = $o_userMiteData->getServices();
+	$a_userMiteBindings = $o_userMiteData->getBindings();
 			
 # build form with configured values
 ###################################			
@@ -76,15 +52,10 @@
 
 	$s_quickLinksList = "<ul>";
 	
-	$s_query = "SELECT a.id,a.name, a.description FROM ".db_get_table('mantis_project_table')." a ".
-			   "JOIN ".db_get_table('mantis_project_user_list_table')." b ".
-			   "ON b.user_id=".$i_userId." AND a.id = b.project_id";
-	
-	$r_result = db_query_bound($s_query);
-	
-	$b_userHasMantisProjects = (db_num_rows($r_result) > 0);
-	
-	while ($b_userHasMantisProjects && ($a_mantisProject = db_fetch_array($r_result))) {
+# gather Mantis project names accessible for the user
+	foreach ($a_userProject_ids as $i_project_id){
+		
+		$s_projectName = project_get_name($i_project_id);
 		
 	# create select boxes for all MITE resources of the user
 	#######################################################		
@@ -98,22 +69,22 @@
 				$s_selectBoxRsrc .= "<option value=''>".lang_get('plugin_mite_please_select')."</option>";
 			}
 			
-			foreach ($a_userMiteData[$s_type] as $i_miteRsrc_id => $a_rsrc) {
+			foreach ($a_userMiteRsrces[$s_type] as $i_miteRsrc_id => $a_rsrc) {
 				
 				$s_selectBoxRsrc .= "<option value='$i_miteRsrc_id'";
 				
 			# mark as selected if it is binded	
-				if (isset($a_userBindings[$s_type][$i_miteRsrc_id]) &&
-					in_array($a_mantisProject['id'],$a_userBindings[$s_type][$i_miteRsrc_id])) {
+				if (isset($a_userMiteBindings[$s_type][$i_miteRsrc_id]) &&
+					in_array($i_project_id,$a_userMiteBindings[$s_type][$i_miteRsrc_id])) {
 					
 					$s_selectBoxRsrc .= " selected='selected'";
 				}	
 				$s_selectBoxRsrc .= ">".$a_rsrc['name']."</option>";
 			}
-			$i_sizeSelectBox = count($a_userMiteData[$s_type]);
+			$i_sizeSelectBox = count($a_userMiteRsrces[$s_type]);
 		
 			$a_selectBoxesRsrc[$s_type] = " 
-				<select name='sb_plugin_mite_".$s_type."_mantis_project_".$a_mantisProject['id']."[]' 
+				<select name='sb_plugin_mite_".$s_type."_mantis_project_".$i_project_id."[]' 
 					class='sb_plugin_mite_".$s_type."'";
 
 		# only allow selecting multiple entries for services	
@@ -125,12 +96,11 @@
 			$a_selectBoxesRsrc[$s_type] .= "size='$i_sizeSelectBox'>$s_selectBoxRsrc</select>";
 		}
 		
-		$s_quickLinksList .= "<li><a href='#project_".$a_mantisProject['id']."'>".
-							 $a_mantisProject['name']."</li>";
+		$s_quickLinksList .= "<li><a href='#project_$i_project_id'>$s_projectName</li>";
 		
 		$s_projectsBindingOptions .= "  
-			<a name='project_".$a_mantisProject['id']."'></a>
-			<fieldset><legend>".$a_mantisProject['name']."</legend>
+			<a name='project_".$i_project_id."'></a>
+			<fieldset><legend>".$s_projectName."</legend>
 				<label>".lang_get('plugin_mite_assignment_mite_project')."</label>".
 				$a_selectBoxesRsrc[Mantis2mitePlugin::API_RSRC_P]."
 				<label>".lang_get('plugin_mite_assignment_mite_service')."</label>".
@@ -143,8 +113,9 @@
 	$s_output .= " 
 		<label>".lang_get('plugin_mite_header_note_pattern')."</label>
 		<p class='bindings_help'>".lang_get('plugin_mite_help_note_pattern')."</p>	
-			<input type='text' class='note_pattern' name='".Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN."' value='".
-			stripslashes(current_user_get_field(Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN))."' autocomplete='off' />
+			<input type='text' class='note_pattern' name='".Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN."' 
+				   value='".
+			stripslashes(current_user_get_field(Mantis2mitePlugin::DB_FIELD_NOTE_PATTERN))."' />
 		<label>".lang_get('plugin_mite_header_interconnections')."</label>
 		<p class='bindings_help'>".lang_get( 'plugin_mite_help_interconnections' )."</p>
 			$s_quickLinksList
