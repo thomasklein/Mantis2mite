@@ -1,10 +1,12 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-
 ############	
 # VARS 
 #######
+
+/*	
+ * @global system vars
+ */ 
+	global $g_plugin_cache;
 /*
  * @local objects/resources
  */
@@ -28,18 +30,13 @@
 ############	
 # ACTION 
 #######	
-	
-# prepare to return an xml message
-	header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, post-check=0');
-	header('Content-Type: text/xml; charset=utf-8');
-	echo '<?xml version="1.0" encoding="UTF-8"?>';	
-	
-	$i_userId = auth_get_current_user_id();
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	$i_userId = $o_pluginController->getCurrentUserId();
 	$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
 									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
 	$s_DBTable_mpsmp = plugin_table(Mantis2mitePlugin::DB_TABLE_PSMP);
 	
-	$o_userMiteData = Mantis2mitePlugin::getMiteUserData();
+	$o_userMiteData = $o_pluginController->getMiteUserData();
 	$a_userMiteBindings = $o_userMiteData->getBindingsByMantisProject();
 	
 	$a_userProject_ids = user_get_all_accessible_projects($i_userId,ALL_PROJECTS);
@@ -158,11 +155,6 @@
 		}
 	}
 	
-	
-	/*echo "<p>".__FILE__."-".__LINE__.": ".print_r($a_updatedProjectBindings)."</p>\n";
-	echo "<p>".__FILE__."-".__LINE__.": ".print_r($a_deletedProjectBindings)."</p>\n";*/
-	
-	
 # execute the database queries	
 	for ($i = 0; $i < count($a_queries); $i++) {
 		$r_result = db_query_bound($a_queries[$i]);
@@ -175,7 +167,7 @@
 	
 # force re-initialization of session stored user values	
 	session_set('plugin_mite_status_session_vars','reinit');
-	Mantis2mitePlugin::initMiteObjects();
+	$o_pluginController->initMiteObjects();
 		
 	echo "<messages datetimestamp='".gmdate('Y-m-d H:i:s')."'>" . $s_xmlMsg . "</messages>";	
 ?>

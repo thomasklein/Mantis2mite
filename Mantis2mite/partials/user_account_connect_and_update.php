@@ -1,14 +1,16 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-
 ############
 # VARS
 #######
+
+/*	
+ * @global system vars
+ */ 
+	global $g_plugin_cache;
 /*
  * @local objects/resources
  */
-	$o_xml = $r_result = null;
+	$o_xml = $r_result = $o_pluginController = null;
 
 /*
  * @local arrays
@@ -32,20 +34,18 @@
 ############
 # ACTION
 #######	
-
-# prepare to return an xml message
-	header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, post-check=0');
-	header('Content-Type: text/xml; charset=utf-8');
-	echo '<?xml version="1.0" encoding="UTF-8"?>';
-	
 	$s_DBTable_mps = plugin_table(Mantis2mitePlugin::DB_TABLE_PS);
 	$s_tableTimeEntries = plugin_table(Mantis2mitePlugin::DB_TABLE_TE);
-	$i_userId = auth_get_current_user_id();
+	
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	$i_userId = $o_pluginController->getCurrentUserId();
+	
 	$a_fieldNamesMiteRsrc_id = array(Mantis2mitePlugin::API_RSRC_P => 'mite_project_id',
 									 Mantis2mitePlugin::API_RSRC_S => 'mite_service_id');
 									 
-	$o_miteRemote = new miteRemote($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY],
-								   $_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]);
+	$o_miteRemote = $o_pluginController->getMiteRemote();
+	$o_miteRemote->init($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY],
+						$_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]);
 	
 	
 # PROJECTS AND SERVICES synchronisation
@@ -60,15 +60,8 @@
 		}
 		
 		try {
-		 	if (!$o_miteRemote->sendRequest('get',$s_rsrcName)) {
+		 	$o_xml = $o_miteRemote->sendRequest('get',$s_rsrcName);
 			
-	 		# EXIT SCRIPT on errors and display errors
-				echo $o_miteRemote->getErrors();
-				exit;
-			}
-			
-			$o_xml = $o_miteRemote->getReponseXML();
-		
 			foreach ($o_xml->children() as $o_child) {
 				
 			# get projects with the same name to append the customer name later on
@@ -140,16 +133,8 @@
 	foreach ($a_mantisTimeEntries as $i_miteProjectId => $a_timeEntries) {
 		
 		try {
-			if (!$o_miteRemote->sendRequest('get',
-											'time_entries.xml?project-id='.intval($i_miteProjectId))){
-			
-			# EXIT SCRIPT on errors and display errors
-				echo $o_miteRemote->getErrors();
-				exit;
-			}
+			$o_xml = $o_miteRemote->sendRequest('get','/time_entries.xml?project-id='.intval($i_miteProjectId));
 											
-			$o_xml = $o_miteRemote->getReponseXML();
-		
 			foreach ($a_timeEntries as $a_timeEntry) {
 				
 				$b_foundMantisTimeEntry = false;
@@ -190,12 +175,7 @@
 	foreach ($a_mantisTimeEntriesNotFound as $i_miteTimeEntryId => $i_mantisTimeEntryId) {
 		
 		try {
-			if (!$o_miteRemote->sendRequest('get','time_entries/'.$i_miteTimeEntryId)) {
-
-			# EXIT SCRIPT on errors and display errors
-				echo $o_miteRemote->getErrors();
-				exit;
-			}
+			$o_miteRemote->sendRequest('get','/time_entries/'.$i_miteTimeEntryId);
 			
 		# if it does exist, but was moved to another project, prepare params to update the entry	
 			$o_xml = $o_miteRemote->getReponseXML();
@@ -217,7 +197,7 @@
 			switch ($e->getCode()) {
 				
 			# if the entry does not exist anymore, delete it from the MANTIS database	
-				case miteRemote::MITE_REMOTE_EXCEPTION_RSRC_NOT_FOUND: 
+				case miteRemote::EXCEPTION_RSRC_NOT_FOUND: 
 					
 					$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
 					$a_queries[] = "DELETE FROM $s_tableTimeEntries WHERE id = $i_mantisTimeEntryId";
@@ -389,7 +369,6 @@
 	
 # force re-initialization of session stored user values	
 	session_set('plugin_mite_status_session_vars','reinit');
-	Mantis2mitePlugin::initMiteObjects();
 
 # return xml log messages
 	echo "<messages datetimestamp='".date('Y-m-d H:i:s')."'>" . $s_xmlMsg . "</messages>";

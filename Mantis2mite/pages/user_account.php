@@ -88,6 +88,12 @@
 	}
 	
 	$s_output = "
+		<noscript>
+	  		<div class='plugin_mite_text_if_no_javascript'>".
+	  			lang_get('plugin_mite_no_javascript_enabled')."
+	  		</div>
+  		</noscript>
+	  	<div class='plugin_mite_hide_if_no_javascript'>
 		<div id='plugin_mite_messages'>
 			<div>
 				<a class='closeBtn' href='#'>".lang_get('plugin_mite_msg_close_message')."</a>
@@ -107,8 +113,12 @@
 				   id='plugin_mite_msg_error_verification' />
 			<input type='hidden' value='".lang_get('plugin_mite_txt_error_updating_account_data')."' 
 				   id='plugin_mite_txt_error_updating_account_data' />
+			<input type='hidden' value='".lang_get('plugin_mite_msg_confirm_changing_account')."' 
+				   id='plugin_mite_msg_confirm_changing_account' />
 			<input type='hidden' value='".lang_get('plugin_mite_msg_confirm_disconnecting_account')."' 
 				   id='plugin_mite_msg_confirm_disconnecting_account' />
+			<input type='hidden' value='".lang_get('plugin_mite_msg_confirm_changing_api_key')."' 
+				   id='plugin_mite_msg_confirm_changing_api_key' />
 			<input type='hidden' value='".lang_get('plugin_mite_msg_success_disconnecting_account')."' 
 				   id='plugin_mite_msg_success_disconnecting_account' />	   
 			<input type='hidden' value='".lang_get('plugin_mite_msg_error_disconnecting_account')."' 
@@ -139,26 +149,30 @@
 	<!-- account name -->
 		<div class='config_fields $s_bgUserAccountDataCssClass'>
 			<label>".$a_configParams['account_name']['label']."</label>
-			http://
-			<input type='".$a_configParams['account_name']['type']."' name='".$a_configParams['account_name']['name']."' 
+			https://
+			<input type='".$a_configParams['account_name']['type']."' 
+				   name='".$a_configParams['account_name']['name']."' 
 				   value='".$a_configParams['account_name']['value']."'".
 				   $a_configParams['account_name']['cssClass'].
 				   $a_configParams['account_name']['readonly']." 
 				   id='plugin_mite_account_name' />.mite.yo.lk
-			<span class='linkChangeValue' style='display:".(($b_visibleLinkChangeAccountName) ? 'block' : 'none')."'>
-				<a href='#' id='plugin_mite_change_account_name'>".
+			<span class='linkChangeValue'>
+				<a href='#' id='plugin_mite_change_account_name'
+				   style='display:".(($b_visibleLinkChangeAccountName) ? 'block' : 'none')."'>".
 				   lang_get('plugin_mite_change_account_name')."</a>
 			</span>		
 						  
 	<!-- API key -->
 			<label>".$a_configParams['api_key']['label']."</label>
-			<input type='".$a_configParams['api_key']['type']."' name='".$a_configParams['api_key']['name']."' 
+			<input type='".$a_configParams['api_key']['type']."' 
+				   name='".$a_configParams['api_key']['name']."' 
 				   value='".$a_configParams['api_key']['value']."'".
 				   $a_configParams['api_key']['cssClass'].
 				   $a_configParams['api_key']['readonly']." 
 				   id='plugin_mite_account_api_key' />
-			<span class='linkChangeValue' style='display:".(($b_visibleLinkChangeApiKey) ? 'block' : 'none')."'>
-				<a href='#' id='plugin_mite_change_api_key'>".
+			<span class='linkChangeValue'>
+				<a href='#' id='plugin_mite_change_api_key'
+				   style='display:".(($b_visibleLinkChangeApiKey) ? 'block' : 'none')."'>".
 				   lang_get('plugin_mite_change_api_key')."</a>
 			</span>
 		</div>
@@ -185,7 +199,8 @@
 	
 		</form>
 		<div id='plugin_mite_user_bindings'></div>
-		</div><!-- plugin_mite_config -->";
+		</div><!-- plugin_mite_config -->
+		</div><!-- plugin_mite_hide_if_no_javascript -->";
 					
 	echo $s_output;
 	

@@ -18,7 +18,7 @@ var MITE_UA = function() {
 // private VARS
 //#######	
 	var $o_btnCheckAccountData = $o_userBindings = $o_linkChangeAccountName =
-		$o_linkChangeApiKey = $o_fieldAccountName = $o_btnDisconnectAccountData = 
+		$o_fieldAccountName = $o_btnDisconnectAccountData = 
 		$o_connectionStatus = $o_frmAccountData = $o_fieldApiKey = null,
 		b_initialized = false;
 		 	
@@ -34,7 +34,7 @@ var MITE_UA = function() {
 		$o_btnCheckAccountData 	    = $("#plugin_mite_check_account_data"),
 		$o_userBindings		   	    = $('#plugin_mite_user_bindings'),
 		$o_linkChangeAccountName    = $('#plugin_mite_change_account_name'),
-		$o_linkChangeApiKey 	    = $('#plugin_mite_change_api_key'),
+		$o_linkChangeApiKey		    = $('#plugin_mite_change_api_key'),
 		$o_fieldAccountName		    = $('#plugin_mite_account_name'),
 		$o_btnDisconnectAccountData = $('#plugin_mite_disconnect_account_data'),
 		$o_connectionStatus			= $("#plugin_mite_connection_status"),
@@ -53,19 +53,66 @@ var MITE_UA = function() {
 	 	$o_frmAccountData.submit(function(e) {
 			
 			e.preventDefault();
-			processAccountData();
+			startAccountVerification();
 			return false;
 		});
-		
 			
 	 // Click handler calling function to process the form data 
 		$o_btnCheckAccountData.click(function(e) {
 			
 			e.preventDefault();
-			processAccountData();
+			startAccountVerification();
 			return false;
 		});
 	}//setInitialEventHandler
+	
+	
+/*****************************************************
+ * Performing 3 step process before connecting to the mite api
+ * Step 1: Check the account name field and api key field for content
+ * Step 2: Check, if old account data is still available and needs to be cleared
+ * Step 3: Connect to the mite api via partial; see processAccountData() for details on that  
+ */	
+	var startAccountVerification = function() {
+				
+	// show error message in case required fields weren't filled out 		
+		if (($o_fieldAccountName.val() == '') || 
+			 ($o_fieldApiKey.val() == '')) {
+			
+			$o_fieldAccountName.focus().select();
+			MITE.showMsg("error",MITE.getMsg('missingAccountData'));
+			return false;
+		}
+		
+	// use case: the user wants to UPDATE the data of the existing MITE account connection
+	// action: fetch data from the current MITE account and compare it with the values already saved
+		if ($o_fieldAccountName.attr("readonly") && $o_fieldApiKey.attr("readonly")) {
+			
+			processAccountData();	
+		}
+		
+	// use case: the user wants CHANGE his API-KEY
+	// action: try to fetch data from the current MITE account with the new api key
+		else if ($o_fieldAccountName.attr("readonly")) {
+		
+			processAccountData();
+		}
+		
+	// use case: the user CHANGED his ACCOUNT DATA
+	// actions: clear the old data of the last MITE connection get new data from a new MITE account
+		else if ($('.plugin_mite_positive_connection_status').length) {
+		
+			disconnectAccount(function(){processAccountData();});
+		}
+		
+	// use case: user connects for the FIRST TIME to a MITE account 
+	// or a former MITE was disconnected and a new is now connected
+	// action: fetch all data from the new MITE account
+		else processAccountData();
+		
+		return true;
+	}//startAccountVerification
+	
 	
 /*****************************************************
  * Sends ajax request to verify the MITE account and 
@@ -75,28 +122,20 @@ var MITE_UA = function() {
 	
 		var s_oldText = $o_btnCheckAccountData.html();
 		
-	// show error message in case required fields weren't filled out 		
-		if (($o_fieldAccountName.val() == '') || 
-			 ($o_fieldApiKey.val() == '')) {
-			
-			$o_fieldAccountName.focus().select();
-			MITE.showMsg("error",MITE.getMsg('missingAccountData'));
-			return false;
-		}
 		$o_btnCheckAccountData.attr('disabled', true)
 							  .html(MITE.addIndicator(MITE.getMsg('checkingAccountData')));
 		
 		$.ajax({
 			type: "POST",
 			dataType: "xml",
-			url: MITE.getPathToPartial('user_account_connect_and_update'),
+			url: MITE.makePartialPath('user_account_connect_and_update','xml'),
 			data: $o_frmAccountData.serialize(),
 			error: function(XMLHttpRequest, textStatus) {
 				
 				MITE.showMsg('error',MITE.getMsg('errorUpdatingAccountData'));
 				MITE.printToConsole(
 					'failedAjaxRequest',
-					{file   : MITE.getPathToPartial('user_account_connection_update'),
+					{file   : MITE.makePartialPath('user_account_connection_update'),
 					 details: textStatus}
 				);
 			},
@@ -137,6 +176,10 @@ var MITE_UA = function() {
 				// show button to disconnect the account	
 					$o_btnDisconnectAccountData.show();
 					
+				// show link to change the account	
+					$o_linkChangeAccountName.show();
+					$o_linkChangeApiKey.show();
+					
 				// resfresh selection since the dom has changed 
 					$("#plugin_mite_last_updated").html($(xmlData).find('messages').attr('datetimestamp'));
 					initBindingArea();
@@ -160,7 +203,7 @@ var MITE_UA = function() {
 				else {
 					MITE.showMsg("error",MITE.getMsg('databaseError'));
 					MITE.printToConsole('applicationError',
-										{file   : MITE.getPathToPartial('user_account_connect_and_update'),
+										{file   : MITE.makePartialPath('user_account_connect_and_update'),
 										 details   : xmlData.childNodes[1].textContent});
 				
 				}
@@ -188,13 +231,13 @@ var MITE_UA = function() {
 		
 		$.ajax({
 			dataType: "text",
-			url: MITE.getPathToPartial('user_account_bindings_display'),
+			url: MITE.makePartialPath('user_account_bindings_display','text'),
 			error: function(XMLHttpRequest, textStatus) {
 				
 				MITE.showMsg('error',MITE.getMsg('errorLoadingBindingArea'));
 				MITE.printToConsole(
 					'failedAjaxRequest',
-					{file   : MITE.getPathToPartial('user_account_bindings_display'),
+					{file   : MITE.makePartialPath('user_account_bindings_display'),
 					 details: textStatus}
 				);
 			},
@@ -207,9 +250,43 @@ var MITE_UA = function() {
   		});
 	}
 	
+/*****************************************************
+* Sends ajax request to delete all MITE data of the user from Mantis
+*/	
+	var disconnectAccount = function(fn_onSuccess) {
+		
+	// save the initial button text
+		var s_txtBtnDisonnect = $o_btnDisconnectAccountData.html();
+		
+		$o_btnDisconnectAccountData.attr('disabled', true)
+          							   .html(MITE.addIndicator(MITE.getMsg('disconnectingAccount')));
+          	
+       	$.ajax({
+			dataType: "xml",
+			url: MITE.makePartialPath('user_account_disconnect','xml'),
+			error: function(XMLHttpRequest, textStatus) {
+				
+				MITE.showMsg("error",MITE.getMsg('errorDisconnectingAccount'));
+				MITE.printToConsole(
+					'failedAjaxRequest',
+					{file   : MITE.makePartialPath('user_account_connection_unbind'),
+					 details: textStatus}
+				);
+			},
+			success: function(data) {
+				
+				$o_btnDisconnectAccountData.attr('disabled', false)
+          							   .html(s_txtBtnDisonnect);
+				
+				fn_onSuccess();
+    		}
+  		});
+	}
+	
 	
 /*****************************************************
  * Bind click events for the user bindings area 
+ * gets called only if the user IS CONNECTED to a MITE account!
  */	
 	var initBindingEvents = function(data) {
 		
@@ -221,16 +298,14 @@ var MITE_UA = function() {
 		
 	// unbind former events in case the bindingArea 
 	// gets initialized several times on one page visit 	
-		$o_linkChangeApiKey.unbind();
 		$o_linkChangeAccountName.unbind();
+		$o_linkChangeApiKey.unbind();
 		$o_btnSaveBindings.unbind();
 		$o_btnDisconnectAccountData.unbind();
 		
 	// show links to change the account data fields	
 		$o_linkChangeAccountName.show();
 		$o_linkChangeApiKey.show();
-	
-	
 	
 	/*****************************************************
 	 * Prevents the new time entry form from submitting
@@ -268,14 +343,14 @@ var MITE_UA = function() {
 			$.ajax({
 				type: "POST",
 				dataType: "xml",
-				url: MITE.getPathToPartial('user_account_bindings_update'),
+				url: MITE.makePartialPath('user_account_bindings_update','xml'),
 				data: $o_frmBindings.serialize(),
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					
 					MITE.showMsg('error',MITE.getMsg('errorSavingBindings'));
 					MITE.printToConsole(
 						'failedAjaxRequest',
-						{file   : MITE.getPathToPartial('user_account_bindings_update'),
+						{file   : MITE.makePartialPath('user_account_bindings_update'),
 						 details: textStatus}
 					);
 				},
@@ -290,95 +365,112 @@ var MITE_UA = function() {
 		}
 			
 	/*****************************************************
- 	* Reactivates the field for the account name
+ 	* Reactivates the field for the account name AND the api key
+ 	* This is the start point for the use case of changing the account
  	*/	
 		$o_linkChangeAccountName.click(function(e) { 
-			$o_fieldAccountName.attr("readonly","")
-							   .removeClass()
-							   .focus()
-							   .select();
+			
+			if (confirm(MITE.getMsg('confirmChangingAccount'))) {
+				
+			// hide all user bindings - visual alert to show him, what happens
+			// if he commits the formular 	
+				$o_userBindings.fadeOut("slow");
+				
+			// hide 'change' links	
+				$o_linkChangeAccountName.hide();
+				$o_linkChangeApiKey.hide();
+				
+			// hide button to disconnect the account	
+				$o_btnDisconnectAccountData.hide();
+				
+				$o_fieldAccountName.attr("readonly","")
+								   .removeClass()
+								   .focus()
+								   .select();
+								   
+				$o_fieldApiKey.clone()
+							  .attr({readonly:'',type:'text'})
+							  .removeClass()
+							  .replaceAll($o_fieldApiKey)
+							  .val('');//delete
+			// refresh selector	
+				$o_fieldApiKey = $('#plugin_mite_account_api_key');
+			}
+			
 			e.preventDefault();							   
 			return false;				   
 		});
 	
+	
 	/*****************************************************
- 	* Reactivates the field for the api key
- 	*/	
-		$o_linkChangeApiKey.click(function(e) { 
-			$o_fieldApiKey.clone()
-						  .attr({readonly:'',type:'text'})
-						  .removeClass()
-						  .replaceAll($o_fieldApiKey)
-						  .focus()
-						  .select()
-						  .val('');//delete
-		// refresh selector	
-			$o_fieldApiKey = $('#plugin_mite_account_api_key');  
-		    e.preventDefault();							   
-			return false;
+	* Reactivates the field for the API key
+	* This is the start point for the use case of changing api key
+	*/
+		$o_linkChangeApiKey.click(function(e) {
+		
+			if (confirm(MITE.getMsg('confirmChangingApiKey'))) {
+					
+					$o_fieldApiKey.clone()
+								  .attr({readonly:'',type:'text'})
+								  .removeClass()
+								  .replaceAll($o_fieldApiKey)
+								  .val('')//delete
+								  .focus()
+								  .select();
+				// refresh selector	
+					$o_fieldApiKey = $('#plugin_mite_account_api_key');
+					
+				// hide 'change' links	
+					$o_linkChangeAccountName.hide();
+					$o_linkChangeApiKey.hide();
+				}
+				
+				e.preventDefault();							   
+				return false;
 		});
-
+	
+	
 	/*****************************************************
-	* Sends ajax request to verify the MITE account and 
-	* retrieve current projects and services from the MITE API
+	* Calls disconnectAccount() if the user confirms the warning message
 	*/	
 		$o_btnDisconnectAccountData.click(function(e) {
 			
-		// save the initial button text
-			var s_txtBtnDisonnect = $o_btnDisconnectAccountData.html();
-			
 			if (confirm(MITE.getMsg('confirmDisconnectingAccount'))) {
 	           	
-	           	$o_btnDisconnectAccountData.attr('disabled', true)
-	           							   .html(MITE.addIndicator(MITE.getMsg('disconnectingAccount')));
+	           	var s_txtBtnDisonnect = $o_btnDisconnectAccountData.html();
 	           	
-	        	$.ajax({
-					dataType: "xml",
-					url: MITE.getPathToPartial('user_account_disconnect'),
-					error: function(XMLHttpRequest, textStatus) {
-						
-						MITE.showMsg("error",MITE.getMsg('errorDisconnectingAccount'));
-						MITE.printToConsole(
-							'failedAjaxRequest',
-							{file   : MITE.getPathToPartial('user_account_connection_unbind'),
-							 details: textStatus}
-						);
-					},
-					success: function(data) {
-						$o_btnDisconnectAccountData.attr('disabled', true);
-						
-						MITE.showMsg("success",MITE.getMsg('successDisconnectingAccount'));
-						
-					// empty user data fields	
-		    			$o_fieldAccountName.val('').attr({readonly:''}).removeClass();
-		    			$o_fieldApiKey.clone()
-									  .attr({readonly:'',type:'text'})
-									  .removeClass()
-									  .replaceAll($o_fieldApiKey)
-									  .val('');//delete
-						
-					// refresh selector	
-						$o_fieldApiKey = $('#plugin_mite_account_api_key');
+	           	disconnectAccount(function() {
+	           		MITE.showMsg("success",MITE.getMsg('successDisconnectingAccount'));
 					
-					// hide the whole user bindings area
-						$o_userBindings.hide();
+				// empty user data fields	
+	    			$o_fieldAccountName.val('').attr({readonly:''}).removeClass();
+	    			$o_fieldApiKey.clone()
+								  .attr({readonly:'',type:'text'})
+								  .removeClass()
+								  .replaceAll($o_fieldApiKey)
+								  .val('');//delete
 					
-					// hide links to change the field values
-						$o_linkChangeAccountName.hide();
-						$o_linkChangeApiKey.hide();
-						 
-					// reset connection status
-						$o_connectionStatus.html(MITE.getMsg('connectionUnverified'))
-										   .addClass('plugin_mite_negative_connection_status');
-									   
-						$o_frmAccountData.children('.config_fields').removeClass('mite_user_account_inactive')
-																	.addClass('mite_user_account_inactive');
-									   
-						$o_btnDisconnectAccountData.hide();
-						$o_btnDisconnectAccountData.attr('disabled', false)
-												   .html(s_txtBtnDisonnect);//reset button text
-		    		}
-		  		});
+				// refresh selector	
+					$o_fieldApiKey = $('#plugin_mite_account_api_key');
+				
+				// hide the whole user bindings area
+					$o_userBindings.hide();
+				
+				// hide links to change the field values
+					$o_linkChangeAccountName.hide();
+					$o_linkChangeApiKey.hide();
+					 
+				// reset connection status
+					$o_connectionStatus.html(MITE.getMsg('connectionUnverified'))
+									   .addClass('plugin_mite_negative_connection_status');
+								   
+					$o_frmAccountData.children('.config_fields').removeClass('mite_user_account_inactive')
+																.addClass('mite_user_account_inactive');
+								   
+					$o_btnDisconnectAccountData.hide();
+					$o_btnDisconnectAccountData.attr('disabled', false)
+											   .html(s_txtBtnDisonnect);//reset button text
+				});
 		  	}
 		  	e.preventDefault();							   
 			return false;

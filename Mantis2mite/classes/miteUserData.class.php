@@ -10,7 +10,6 @@
 
 class miteUserData {
 	
-	
 ############
 # PROPERTIES
 #######	
@@ -18,6 +17,7 @@ class miteUserData {
 	private $a_services;
 	private $a_bindings;
 	private $i_userId;
+	private $o_pluginController;
 	
 
 ############
@@ -27,16 +27,20 @@ class miteUserData {
 /*****************************************************
  * Constructor automatically populating the user properties
  * 
+ * @param Mantis2mitePlugin $o_pluginController
+ * @param int $i_userId
+ * 
  * @throws error if the class "Mantis2mitePlugin" does not exist
  */	
-	public function __construct($i_userId) {
+	public function __construct($o_pluginController,$i_userId) {
 		
-		if (!class_exists("Mantis2mitePlugin")) {
+		if (!(get_class($o_pluginController) == "Mantis2mitePlugin")) {
 			throw new Exception('Error: Necessary plugin class "Mantis2mitePlugin" does not exist!');
 			exit;
 		}
 		
 		$this->i_userId = $i_userId;
+		$this->o_pluginController = $o_pluginController;
 		$this->initUserData();
 	}//__construct
 	
@@ -166,7 +170,7 @@ class miteUserData {
 		foreach ($a_values as $i_id => $a_props) {
 			
 			if (isset($a_props[$s_fieldName]))
-				$a_props[$s_fieldName] = Mantis2mitePlugin::decodeValue($a_props[$s_fieldName]);
+				$a_props[$s_fieldName] = $this->o_pluginController->decodeValue($a_props[$s_fieldName]);
 			
 			$a_orderedValues[$i_id] = $a_props;
 		}
@@ -192,7 +196,12 @@ class miteUserData {
 	
 
 /*****************************************************
- * Enter description here...
+ * Returns all bindings ordered by Mantis projects as an array
+ * 
+ * E.g. array([1] => array('services' => array(SERVICE_1,SERVICE_1), 
+ *						   'projects' => array(PROJECT_1,PROJECT_2)),
+ * 		array([2] => array('services' => array(SERVICE_1,SERVICE_3),
+ *						   'projects' => array(PROJECT_1,PROJECT_2)))
  *
  * @return array
  */
@@ -221,7 +230,10 @@ class miteUserData {
 
 	
 /*****************************************************
- * Enter description here...
+ * Return all bindings for the given id of the mantis project as an array
+ * 
+ * E.g. array('services' => array(SERVICE_1,SERVICE_1), 
+ *			  'projects' => array(PROJECT_1,PROJECT_2))
  *
  */
 	public function getBindingsForMantisProject($i_mantis_project_id) {
@@ -243,7 +255,7 @@ class miteUserData {
 	
 
 /*****************************************************
- * Return all resources binded to the given Mantis project id in an array
+ * Return all resources binded to the given Mantis project id as an array
  *
  * @param int $i_mantis_project_id
  * 
@@ -284,7 +296,7 @@ class miteUserData {
 	
 
 /*****************************************************
- * Return all resources not binded to the given Mantis project id in an array
+ * Return all resources not binded to the given Mantis project id as an array
  *
  * @param int $i_mantis_project_id
  * 

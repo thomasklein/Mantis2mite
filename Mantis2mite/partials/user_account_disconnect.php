@@ -1,14 +1,15 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-	
 ############
 # VARS
 #######
+/*	
+ * @global system vars
+ */ 
+	global $g_plugin_cache;
 /*
  * @local objects/resources
  */
-	$r_result = null;
+	$r_result = $o_pluginController = null;
 
 /*
  * @local arrays
@@ -22,12 +23,8 @@
 ############
 # ACTION
 #######	
-	$i_userId = auth_get_current_user_id();
-	
-# prepare to return an xml message
-	header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, post-check=0');
-	header('Content-Type: text/xml; charset=utf-8');
-	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	$i_userId = $o_pluginController->getCurrentUserId();
 	
 	$a_queries[] =  
 		"DELETE FROM ".plugin_table(Mantis2mitePlugin::DB_TABLE_PS)." WHERE user_id = ".$i_userId;

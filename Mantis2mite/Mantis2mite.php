@@ -31,6 +31,7 @@
 require_once(config_get('class_path').'MantisPlugin.class.php');
 require_once('classes/miteUserData.class.php');
 require_once('classes/miteRemote.class.php');
+require_once('classes/mitePartialsController.class.php');
 
 class Mantis2mitePlugin extends MantisPlugin {
 	
@@ -113,7 +114,9 @@ class Mantis2mitePlugin extends MantisPlugin {
  */	
 	private $a_pageResources = array(
 		'Mantis2mite/user_account' => array('js' => array('mite_user_account.js')),
-		'view.php' 		    => array('js' => array('mite_time_entries.js')));
+		'view.php' => array('js' => array('mite_time_entries.js')),
+		'bug_view_advanced_page.php'  => array('js' => array('mite_time_entries.js')),
+		'bug_view_page.php'  => array('js' => array('mite_time_entries.js')));
 	
 /**
  * Files to include generally if some plugin specific action happens on the current page
@@ -138,25 +141,39 @@ class Mantis2mitePlugin extends MantisPlugin {
  * @public array containing patterns for api data structures to obtain from mite
  */
 	public static $a_miteResources = 
-		array(self::API_RSRC_P   => 'projects.xml',
-			  self::API_RSRC_S   => 'services.xml',
-			  self::API_RSRC_TEP => 'time_entries.xml?project-id=%s',
-			  self::API_RSRC_TE  => 'time_entries/%s.xml'
+		array(self::API_RSRC_P   => '/projects.xml',
+			  self::API_RSRC_S   => '/services.xml',
+			  self::API_RSRC_TEP => '/time_entries.xml?project-id=%s',
+			  self::API_RSRC_TE  => '/time_entries/%s.xml'
 			  );
 	
 /**
  * Contains the current users MITE data: projects, services, bindings to Mantis projects
  *
- * @public static object
+ * @private miteUserData
  */
-  	private static $o_miteUserData;
+  	private $o_miteUserData;
   	
 /**
  * Provides methods to communicate with the MITE API
  *
- * @public static object
+ * @private miteRemote
  */
-  	private static $o_miteRemote;
+  	private $o_miteRemote;
+  	
+/**
+ * Provides methods to handle files called by ajax requests: partials
+ *
+ * @private mitePartialsController
+ */
+  	private $o_mitePartialsController;
+  	
+/**
+ * Contains the current id of the logged in user
+ *
+ * @private int
+ */  	
+  	private $i_userId;
   	
 			  
 ############	
@@ -167,13 +184,13 @@ class Mantis2mitePlugin extends MantisPlugin {
 ############################################
 
 /*****************************************************
- *  Callback to register the plugin with the Mantis plugin manager
+ *  Registers the plugin with the Mantis plugin manager
  */	
 	function register() {
 		$this->name        = 'Mantis2<em>mite</em>';
 		$this->description = lang_get('plugin_mite_description');
 		$this->page = 'config';
-		$this->version     = '1.1';
+		$this->version     = '1.2';
 		$this->requires    = array('MantisCore'=> '1.2.0');
 		$this->author      = 'Thomas Klein';
 		$this->contact     = 'thomas.klein83@gmail.com';
@@ -182,7 +199,7 @@ class Mantis2mitePlugin extends MantisPlugin {
  
 	
 /*****************************************************
- *  Callback to set config vars for the plugin behaviour  
+ *  Sets config vars for the plugin behaviour  
  */		
 	function config() {
 		return array(
@@ -193,7 +210,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 	
 	
 /*****************************************************
- * Callback raised in the installation process (adding tables and columns to the mantis database)
+ * Called in the istallation process (adding tables and columns to the mantis database)
  * and everytime the user is on the 'Manage Plugins' site
  */
 	function schema() {
@@ -235,8 +252,11 @@ class Mantis2mitePlugin extends MantisPlugin {
 	
 
 /****************************************************
- * @CALLBACK MANTIS EVENT
+ * Called as a last step of the installation process.
+ * Here you could check for dependencies to other plugins. 
  * Must return true, otherwise the installation will fail
+ * 
+ * @return boolean
  */	
 	function install() {
 		
@@ -257,8 +277,7 @@ class Mantis2mitePlugin extends MantisPlugin {
   	
 	
 /*****************************************************
- * @CALLBACK MANTIS EVENT
- * Callback raised after the user clicked the uninstall button (!)
+ * Called after the user clicked the uninstall button (!)
  * Removes all database columns that were added via the plugin  
  */	
 	function uninstall() {
@@ -362,13 +381,13 @@ class Mantis2mitePlugin extends MantisPlugin {
 	}//uninstall
 	
 /****************************************************
- * Callback raised during the initialization of all plugins
+ * Called during the initialization of all plugins to register baisc event hooks
  */	
 	public function init() {
 		
 		plugin_event_hook_many(array(
 			'EVENT_PLUGIN_INIT' => 'setEventHooks',
-			'EVENT_CORE_READY'  => 'initPlugin'
+			'EVENT_CORE_READY'  => 'initPluginObjects'
 		));
 	}//init
 	
@@ -377,7 +396,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 	
 /*****************************************************
  * Handle the EVENT_PLUGIN_INIT callback
- * This is the start point for plugin actions
+ * This is the start point for all advanced plugin actions 
  */ 
 	function setEventHooks() {
   		
@@ -387,12 +406,14 @@ class Mantis2mitePlugin extends MantisPlugin {
     	plugin_event_hook('EVENT_LAYOUT_RESOURCES','insertLayoutResources');
 	}//setEventHooks
 	
-/**
- * Enter description here...
+	
+/*****************************************************
+ * Inits the plugin objects to make them accessible in every
+ * plugin relevant context 
  *
  */
-	public function initPlugin() {
-		self::initMiteObjects();
+	public function initPluginObjects() {
+		$this->initMiteObjects();
 	}//initPlugin
 	
 	
@@ -460,19 +481,28 @@ class Mantis2mitePlugin extends MantisPlugin {
 /*****************************************************
  * Adds a link in the user account preferences to configure the plugin
  */
-	function addConfigLink_userAccount($i_eventType,$params) {
-  		return "<a href='".plugin_page("user_account")."'><em>mite</em></a>";
+	public function addConfigLink_userAccount($i_eventType,$params) {
+  		return "
+  			<noscript><acronym title='".lang_get('plugin_mite_no_javascript_enabled')."'>
+  				!!!  
+  			</acronym></noscript>
+  			</noscript>
+  			<a href='".plugin_page("user_account")."'><em>mite</em></a>
+  			";
+  	
   	}//addConfigLink_userAccount
   
   	
 /*****************************************************
  * Adds a row for time entries after the 'Status' row in the bug view
  */	
-  	function addTimeEntryRow_bugDetail($c_eventName,$i_bugId, $b_advancedView) {
+  	public function addTimeEntryRow_bugDetail($c_eventName,$i_bugId, $b_advancedView) {
 		
   	# don't add the time entry row, if 
   	# - the user can't see time entries of others AND
-  	# - has verified connection to a MITE account
+  	# - has no verified connection to a MITE account
+  	# if the user has no verified connection to a MITE account but 
+  	# is able to see time entries of other users, he should see them
   	##################################################	
   		if ((current_user_get_field('access_level') < 
 			 plugin_config_get('mite_timetracks_visible_threshold_level')) &&
@@ -486,7 +516,14 @@ class Mantis2mitePlugin extends MantisPlugin {
   	 */	
   		$s_output = "
   			<tr ".helper_alternate_class().">
-	  			<td class='category'>".
+	  			<td class='category'>
+	  		<!-- NO SCRIPT MESSAGE -->	
+	  			<noscript>
+	  				<div class='plugin_mite_text_if_no_javascript'>".
+  						lang_get('plugin_mite_no_javascript_enabled')."
+  					</div>
+  				</noscript>
+	  			<div class='plugin_mite_hide_if_no_javascript'>".
   					lang_get('plugin_mite_time_entries')."
   					<span class='plugin_mite_link_to_settings'>
   						[ <a href='".
@@ -494,14 +531,16 @@ class Mantis2mitePlugin extends MantisPlugin {
   							lang_get('plugin_mite_link_to_settings').
   						"</a> ]
   					</span>
+  				</div><!-- plugin_mite_text_hide_if_no_javascript -->	
   				</td>
-	  			<td colspan='5' class='plugin_mite_time_entries'>";
+	  			<td colspan='5' class='plugin_mite_time_entries'>
+	  			<div class='plugin_mite_hide_if_no_javascript'>";
 	  			
 	  	if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
 			$s_output .= "		
   					<form id='plugin_mite_frm_new_time_entry'>
   						<div id='plugin_mite_show_new_time_entry_form'>
-	  						<a href='#' title='[ctrl-t]' accesskey='t' class='addTimeEntry'>".
+	  						<a name='addTimeEntry' href='#addTimeEntry' title='[ctrl-t]' accesskey='t' class='addTimeEntry'>".
 		  						lang_get('plugin_mite_show_new_time_entry_form') . "	
 	  						</a>
 	  					</div>
@@ -556,6 +595,7 @@ class Mantis2mitePlugin extends MantisPlugin {
   					   value='".lang_get('plugin_mite_deleting_time_entry')."' />  						   
   					   
   			</div><!-- plugin_mite_messages -->
+  			</div><!-- plugin_mite_hide_if_no_javascript -->
   		</td>
   		</tr>";
   				
@@ -563,10 +603,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 	  	echo $s_output;
   	}//addTimeEntryRow_bugDetail
 
-	
-# CLASS METHODS
-###################################		
-	
+  	
 /****************************************************
  * only if the user is logged in and has verified the connection to a MITE account
  * inits 
@@ -575,44 +612,70 @@ class Mantis2mitePlugin extends MantisPlugin {
  * 
  * @return boolean
  */	
-	public static function initMiteObjects() {
+	public function initMiteObjects() {
 		
 	# do nothing if the user is not logged in	
 		if (!auth_get_current_user_cookie()) return;
 		
+		$this->i_userId = auth_get_current_user_id();
+		$this->o_miteRemote = miteRemote::getInstance();
+		$this->o_mitePartialsController = mitePartialsController::getInstance();
+		
 	# only fill session with user data, if there's a user currently logged in	
 		if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
 			
-			self::$o_miteUserData = new miteUserData(auth_get_current_user_id());
-			self::$o_miteRemote = new miteRemote(self::getDecodedUserValue(self::DB_FIELD_API_KEY),
-												 self::getDecodedUserValue(self::DB_FIELD_ACCOUNT_NAME));
-			
+			$this->o_miteUserData = new miteUserData($this,$this->i_userId);
+			$this->o_miteRemote->init($this->getDecodedUserValue(self::DB_FIELD_API_KEY),
+									  $this->getDecodedUserValue(self::DB_FIELD_ACCOUNT_NAME));
+		
 		}
 		return true;
 	}//initMiteObjects
   	
   	
-  	
 /****************************************************
+ * Returns the id of the current mantis user
+ *
+ * @return int
+ */
+	public function getCurrentUserId() {
+		
+		return $this->i_userId;
+	}//getCurrentUserId
+	
+	
+ /****************************************************
  * returns an object providing methods to communicate with the MITE API 
  *
- * @return object 
+ * @return object miteRemote
  */
-	public static function getMiteRemote() {
+	public function getMiteRemote() {
 		
-		return self::$o_miteRemote;
+		return $this->o_miteRemote;
 	}
 	
 
 /****************************************************
  * returns an object to containing all relevant values for Mantis2mite for the current user
  *
- * @return object 
+ * @return object miteUserData
  */
-	public static function getMiteUserData() {
+	public function getMiteUserData() {
 		
-		return self::$o_miteUserData;
+		return $this->o_miteUserData;
 	}//getMiteUserData
+	
+	
+/****************************************************
+ * returns an object providing methods to include contents of files 
+ * and give them access to plugin functions and the Mantis environment
+ *
+ * @return object mitePartialsController
+ */
+	public function getMitePartialsController() {
+		
+		return $this->o_mitePartialsController;
+	}//getMitePartialsController	
 	
 	
 /****************************************************
@@ -622,74 +685,24 @@ class Mantis2mitePlugin extends MantisPlugin {
  * 
  * @return boolean|string false if the value does not exist or the value 
  */
-	private static function getDecodedUserValue($s_name) {
+	private function getDecodedUserValue($s_name) {
 		
 	# supress Mantis warning in case the values does not exist	
 		$s_value = @current_user_get_field($s_name);
 
-		if($s_name) return self::decodeValue($s_value);
+		if($s_name) return $this->decodeValue($s_value);
 		
 		else return false;
 		
 	}//getDecodedUserValue
   	
-  	
-/*****************************************************
- * This method is called from a partial.
- * It checks if the partial was called with an AJAX request 
- * and puts this plugin on the plugin stack to access all methods and properties of it
- */	
-	static function initPartial() {
-		
-	# !!! POSSIBLE SCRIPT EXIT !!!
-	# if the file calling this methods is not accessed with an AJAX request
-	#######################################################################
-		if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) ||
-			($_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest')) {
-	
-			exit("This script can only be accessed with a valid parameter set and an AJAX request.");
-		}
-		
-		plugin_push_current("Mantis2mite");
-	}//initPartial
-		
-	
-/*****************************************************
- * Returns the current or given datetime in a MySQL compatible format
- * within the timezone of the MITE server
- */	
-	static function mysqlDate($s_dateTime = null,$b_dateOnly = false) {
-		
-	/*
-	 * @local strings
-	 */	
-		$s_mysqlDate = $s_dateFormat = '';
-		
-		$s_localTimezone = date_default_timezone_get();
-		date_default_timezone_set(self::TIMEZONE_MITE_SERVER);
-		
-		$s_dateFormat = 'Y-m-d H:i:s';
-		
-		if ($b_dateOnly)
-			$s_dateFormat = 'Y-m-d';
-		
-		if ($s_dateTime)
-			$s_mysqlDate = date($s_dateFormat,strtotime($s_dateTime));
-		else
-			$s_mysqlDate = date($s_dateFormat);
-		
-		date_default_timezone_set($s_localTimezone);
-		
-		return $s_mysqlDate;
-	}//mysqlDate
-	
 	
 /*****************************************************
  * @TODO use strong encryption methods instead of obfuscating the value
  * NOTE: This method actually only obfuscates the value using 'base64_encode' making it harder to directly 
  * read user data out of the database. 
  */	
-	static function encodeValue($s_value,$s_salt = null) {
+	public function encodeValue($s_value,$s_salt = null) {
 		
 		return base64_encode($s_value);
 	}//encodeValue
@@ -699,16 +712,15 @@ class Mantis2mitePlugin extends MantisPlugin {
  * @TODO use strong encryption methods instead of obfuscating the value
  * NOTE: This method only deobfuscates the value 
  */	
-	static function decodeValue($s_value,$s_salt = null) {
+	public function decodeValue($s_value,$s_salt = null) {
 		
 		return base64_decode($s_value);
-	}//decodeValue
-	
+	}//decodeValue	
 	
 /*****************************************************
  * Replaces defined placeholders in $s_text by their values
  */	
-	static function replacePlaceHolders($s_text,$i_bugId) {
+	public function replacePlaceHolders($s_text,$i_bugId) {
 		
 	/*
 	 * @local string
@@ -737,7 +749,41 @@ class Mantis2mitePlugin extends MantisPlugin {
 		
 		return $s_modifiedText;
 		
-	}//replaceTimeEntryNotePlaceHolders
+	}//replaceTimeEntryNotePlaceHolders	
+	
+	
+# CLASS METHODS
+###################################
+    	
+
+/*****************************************************
+ * Returns the current or given datetime in a MySQL compatible format
+ * within the timezone of the MITE server
+ */	
+	static function mysqlDate($s_dateTime = null,$b_dateOnly = false) {
+		
+	/*
+	 * @local strings
+	 */	
+		$s_mysqlDate = $s_dateFormat = '';
+		
+		$s_localTimezone = date_default_timezone_get();
+		date_default_timezone_set(self::TIMEZONE_MITE_SERVER);
+		
+		$s_dateFormat = 'Y-m-d H:i:s';
+		
+		if ($b_dateOnly)
+			$s_dateFormat = 'Y-m-d';
+		
+		if ($s_dateTime)
+			$s_mysqlDate = date($s_dateFormat,strtotime($s_dateTime));
+		else
+			$s_mysqlDate = date($s_dateFormat);
+		
+		date_default_timezone_set($s_localTimezone);
+		
+		return $s_mysqlDate;
+	}//mysqlDate
 	
 }//Mantis2mitePlugin
 ?>

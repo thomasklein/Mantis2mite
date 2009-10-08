@@ -1,15 +1,17 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-
 ############	
 # VARS 
 #######
 	
+/*	
+ * @global system vars
+ */ 
+	global $g_plugin_cache;
+
 /*
  * @local resources/objects
  */	
-	$r_result = null;
+	$r_result = $o_pluginController = null;
 /**
  * @local array contains all configurable values
  */		
@@ -35,9 +37,11 @@
 ############	
 # ACTION 
 #######
-	$i_currentUserId = auth_get_current_user_id();
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	$i_currentUserId = $o_pluginController->getCurrentUserId();
 	$i_bugId = $_GET['bug_id'];
 	$i_projectId = $_GET['project_id'];
+	
 	
 	if (current_user_get_field(Mantis2mitePlugin::DB_FIELD_CONNECT_VERIFIED)) {
 		
@@ -139,9 +143,9 @@
 					</td>
 	    			<td".$s_cssClass.">".$a_row['mite_date_at']."</td>
 	    			<td".$s_cssClass.">".
-    		Mantis2mitePlugin::decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_P][$a_row['mite_project_id']])."</td>
+    		$o_pluginController->decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_P][$a_row['mite_project_id']])."</td>
 	    			<td".$s_cssClass.">".
-    		Mantis2mitePlugin::decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_S][$a_row['mite_service_id']])."</td>
+    		$o_pluginController->decodeValue($a_userMiteData[Mantis2mitePlugin::API_RSRC_S][$a_row['mite_service_id']])."</td>
 	    			<td".$s_cssClass." style='text-align:center'>$s_noteToggler</td>
 	    			<td class='column_hours".(($s_cssClass != '') ? ' firstRow' : '')."'>".
 	    				sprintf($s_patternTwoDigits,
@@ -153,23 +157,27 @@
 	    	$s_cssClass = $s_noteToggler = '';				
 		}
 		
+	# if there are time entries connected to this bug	
 		if ($b_pageHasUserTimeEnries) {
 		
+		# if the current time entry is from another user	
 			if ($i_currentUserId != $i_userId) {
 				
 				$s_output .= "
 					<h4><a class='plugin_mite_time_show_entries_other_user' href='#'>".
 						$a_properties['realname']."</a> - ".
-						sprintf($s_patternTwoDigits,((int)($i_totalTime / 60)),($i_totalTime % 60)). "
+						sprintf($s_patternTwoDigits,((int)($i_totalTime / 60)),($i_totalTime % 60))."
 					</h4>
 					<div class='plugin_mite_time_entries_other_user'>";
 			}
+		# if the current time entry is from the current user
+		# and he has at least a time entry 
 			elseif ($b_showOtherUsers && count($a_users > 1)) {	
 				$s_output .= "
 					<h4>".lang_get('plugin_mite_user_time_entries')." - ".
 					sprintf($s_patternTwoDigits,((int)($i_totalTime / 60)),($i_totalTime % 60))."</h4>";
 			}
-			
+
 			$s_output .= "
 				<table style='width:100%'>
 				<colgroup>

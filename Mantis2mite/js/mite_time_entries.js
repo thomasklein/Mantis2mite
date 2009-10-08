@@ -63,7 +63,7 @@ var MITE_TE = function() {
 			dataType: "text",
 			data: {bug_id:$('#plugin_mite_current_bug').val(),
 				   project_id:$('#plugin_mite_current_project').val()},
-			url: MITE.getPathToPartial('time_entry_form_fields_display'),
+			url: MITE.makePartialPath('time_entry_form_fields_display','text'),
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				MITE.showMsg('error',MITE.getMsg('errorLoadingTimeEntries_fnf'));
 				MITE.printToConsole(
@@ -94,12 +94,12 @@ var MITE_TE = function() {
 			dataType: "text",
 			data: {bug_id:$('#plugin_mite_current_bug').val(),
 				   project_id:$('#plugin_mite_current_project').val()},
-			url: MITE.getPathToPartial('time_entries_display'),
+			url: MITE.makePartialPath('time_entries_display','text'),
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				MITE.showMsg('error',MITE.getMsg('errorLoadingTimeEntries_fnf'));
 				MITE.printToConsole(
 					'failedAjaxRequest',
-					{file   : MITE.getPathToPartial('time_entries_display'),
+					{file   : MITE.makePartialPath('time_entries_display'),
 					 details: textStatus}
 				);
 			},
@@ -165,12 +165,12 @@ var MITE_TE = function() {
 						dataType: "xml",
 						data: {action:'deleteEntry',
 					   		   data:$(this).parent("form").serialize()},
-						url: MITE.getPathToPartial('time_entry_process'),
+						url: MITE.makePartialPath('time_entry_process','xml'),
 						error: function(XMLHttpRequest, textStatus, errorThrown) {
 							MITE.showMsg('error',MITE.getMsg('errorDeletingTimeEntry_fnf'));
 							MITE.printToConsole(
 								'failedAjaxRequest',
-								{file   : MITE.getPathToPartial('time_entry_process'),
+								{file   : MITE.makePartialPath('time_entry_process'),
 								 details: textStatus}
 							);
 						},
@@ -292,12 +292,12 @@ var MITE_TE = function() {
 				dataType: "xml",
 				data: {action:'addEntry',
 					   data:$o_frmNewTimeEntry.serialize()},
-				url: MITE.getPathToPartial('time_entry_process'),
+				url: MITE.makePartialPath('time_entry_process','xml'),
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					MITE.showMsg('error',MITE.getMsg('errorAddingTimeEntry_fnf'));
 					MITE.printToConsole(
 						'failedAjaxRequest',
-						{file   : MITE.getPathToPartial('time_entry_process'),
+						{file   : MITE.makePartialPath('time_entry_process'),
 						 details: textStatus}
 					);
 				},

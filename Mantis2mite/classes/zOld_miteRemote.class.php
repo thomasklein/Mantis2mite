@@ -1,5 +1,5 @@
 <?php
-/* CLASS miteRemote - last updated 8th October 2009
+/* CLASS miteRemote
  * 
  * @description provides methods to communicate with the MITE API
  * @package mite.plugins
@@ -15,7 +15,7 @@ class miteRemote {
 	private $s_header;
 	private $i_port;
 	private $s_miteAccountUrl;
-	private $s_protocolPrefix;
+	private $s_sslPrefix;
 	
 	private static $instance = null;//necessary to act as singleton
 	
@@ -77,7 +77,7 @@ class miteRemote {
 		
 		if ($b_useSSLSocket) {
 			$this->i_port = 443;
-			$this->s_protocolPrefix = "ssl://";
+			$this->s_sslPrefix = "ssl://";
 		}
 		
 		$this->s_header = "Host: ".$this->s_miteAccountUrl."\r\n".
@@ -119,37 +119,32 @@ class miteRemote {
 	/*
 	 * @local arrays
 	 */	
-		$a_lastPhpError = $a_rawResponse = $a_response = array();
+		$a_lastPhpError = array();
 	/*
 	 * @local strings
 	 */
-		$s_fullUrl = $s_responsePart = $s_responseBody = $s_status = $s_request = $s_protocolPrefix = ''; 
+		$s_fullUrl = $s_response = ''; 
 		
 
 	############	
 	# ACTION 
 	#######
 		$s_httpMethod = strtoupper($s_httpMethod);
-		
-		$s_fullUrl = $this->s_miteAccountUrl.$s_rsrcName;
-		
-	# begin to form the request	
-		$s_request = "$s_httpMethod $s_rsrcName HTTP/1.1\n".
-					 $this->s_header;
-	
+				
+	# check 	
 		switch ($s_httpMethod) {
 
-			case 'POST':
-			case 'PUT':
-				$s_request .= "Content-Length: ".strlen($s_requestData)."\r\n".
-							  "Connection: close\n\n".
-							  $s_requestData."\n";
-				
+			case 'POST': 
+				$a_httpOptions['content'] = $s_requestData;
 				break;
 				
 			case 'GET':
 			case 'DELETE':
-				$s_request .= "Connection: close\n\n";
+				//nothing to do here...
+				break;
+				
+			// @TODO	
+			case 'PUT': 
 				break;
 				
 			default:
@@ -157,13 +152,29 @@ class miteRemote {
 									' not available!',self::EXCEPTION_WRONG_REQUEST_TYPE);
 		}
 		
-		$r_fs = @fsockopen($this->s_protocolPrefix.$this->s_miteAccountUrl,	
-						   $this->i_port,
-						   &$i_errno,
-						   &$s_errstr,
-						   self::REQUEST_TIMEOUT);
-						   
-	# if the socket connection failed - distinguish error cases	
+		$request = 
+			"$s_httpMethod $this->uri HTTP/1.1\r\n".
+			$this->s_header.
+		  	"Content-Length: ".strlen($this->data)."\r\n".
+			"Connection: close\n\n".
+			"$this->data\n";
+		
+		if ($this->b_useSSLSocket) {
+			$r_fs = @fsockopen("ssl://".$this->s_miteAccountUrl,	
+							  $this->i_port,
+							  &$i_errno,
+							  &$s_errstr,
+							  self::REQUEST_TIMEOUT);
+		}
+		else {
+			$r_fs = @fsockopen($this->s_miteAccountUrl,
+							   $this->i_port,
+							   &$i_errno,
+							   &$s_errstr,
+							   self::REQUEST_TIMEOUT);
+		}
+		
+	# if the connection failed - distinguish error cases	
 		if (!$r_fs) {
 			
 		# get last error message
@@ -175,118 +186,118 @@ class miteRemote {
 									'<em>'.$a_lastPhpError['message'].'</em>',
 									self::EXCEPTION_CONNECTION_REFUSED);
 			}
+			
+		# error 404: URL not found 	
+			else if (strpos($a_lastPhpError['message'],'404 Not Found')) {
+				
+				throw new Exception('Status code 404: '.
+									'Resource '.$s_fullUrl.' does not exist!',
+									self::EXCEPTION_RSRC_NOT_FOUND);
+				
+			}
+		# error 401: access denied	
+			else if (strpos($a_lastPhpError['message'],'401 Authorization')) {
+				
+				throw new Exception('Status code 401: '.
+									'You have no access to '.$s_fullUrl.'. Please recheck the provided '.
+									'mite account data in your preferences. Maybe somehting has changed '.
+									'since your last visit?',
+									self::EXCEPTION_RSRC_NOT_FOUND);
+			}
+		# error 411: lenth required
+			else if (strpos($a_lastPhpError['message'],'411 Length Required')) {
+				
+				throw new Exception('Status code 411: '.
+									'Could create/update resource on '.$s_fullUrl.' due to '.
+									'missing content.',
+									self::EXCEPTION_RSRC_NOT_FOUND);
+				
+			}
+			
+		# error 500: unexpected condition found by the server 
+			else if (strpos($a_lastPhpError['message'],'500')) {
+				throw new Exception('Status code 500: '.
+									'The server encountered an unexpected condition '.
+									'when trying to handle the request to '.$s_fullUrl.'.<br />'.
+									'<em>'.$a_lastPhpError['message'].'</em>');
+			}
+			
 		# also note unexpected error messages
 			else {
-				throw new Exception(
-					'There was a problem when trying to access '.$s_fullUrl.'.<br />'.
-					'<em>'.$a_lastPhpError['message'].'</em>',
-					self::EXCEPTION_NO_ACCESS);
+				if ($s_httpMethod == 'POST') {
+						
+				}
+				else {
+					throw new Exception(
+						'There was a problem when trying to access '.$s_fullUrl.'.<br />'.
+						'<em>'.$a_lastPhpError['message'].'</em><br />'.
+						'http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html '.
+						'contains a list of all http status codes and their meanings.',
+						self::EXCEPTION_NO_ACCESS);
+				}
 			}
-		}
+		}	
 		
-	# continue here, if there were no errors when trying to establish 
-	# the socket connection to the remote server 	
 		else {
-				
-		# put request into stream		
-			fputs($r_fs, $s_request);	
-			
 			$a_requestInfo = stream_get_meta_data($r_fs);
-			
+		    
 			if ($a_requestInfo['timed_out']) {
-		        throw new Exception('The connection timed out when trying to reach "'.$s_fullUrl.'".',
+		        throw new Exception('The connection timed out when trying to reach '.$s_fullUrl.'.',
 									self::EXCEPTION_TIMED_OUT);
 		    }
 			
-		# get response as an array by splitting it into lines	
-			$a_rawResponse = explode("\n",@stream_get_contents($r_fs));
+		# get response document	
+			$s_response = @stream_get_contents($r_fs);
 			
-		# close connection to avoid performance issues
+			if ($s_response === FALSE) {
+				$a_lastPhpError = error_get_last();
+				
+				throw new Exception("Problem with contents of ".$s_fullUrl."<br />".
+									"<em>".$a_lastPhpError['message']."</em>");
+			}
+			
 			@fclose($r_fs);
 			
-		# in case of a "400 Bad Request"	
-			if (trim($a_rawResponse[0]) == '<html>') {
-				throw new Exception('Bad request (400) when trying to access "'.$s_fullUrl.'".');
-			}
-			
-			$s_responsePart = 'header';
-			
-		# separate response in header and body part 	
-			foreach ($a_rawResponse as $s_line) {
-			
-			# check for the first empty line which separates 
-			# header and body part of the response	
-				if (trim($s_line) == '') {
-					$s_responsePart = 'body';
-					continue;
-				}
-				
-				$a_response[$s_responsePart][] = $s_line;
-			}
-			
-		# get the http status of the response	
-			$s_status = $a_response['header'][(count($a_response['header']) - 1)];
-			
-		# perform actions depending on the response status	
-			switch (trim($s_status)) {
-				
-				case 'Status: 401':
-					throw new Exception('Status code 401: '.
-										'You have no access to "'.$s_fullUrl.'". Please recheck the provided '.
-										'mite account data in your preferences. Maybe somehting has changed '.
-										'since your last visit?',
-										self::EXCEPTION_NO_ACCESS);
-					break;
-				
-				case 'Status: 404':
-					throw new Exception('Status code 404: '.
-										'Resource "'.$s_fullUrl.'" does not exist.',
-										self::EXCEPTION_RSRC_NOT_FOUND);
-					break;
-				
-				case 'Status: 500':
-					throw new Exception('Status code 500: '.
-										'The server encountered an unexpected condition '.
-										'when trying to handle the request to "'.$s_fullUrl.'"');
-					break;
+		# check the returned status code 
+			switch ($a_requestInfo['wrapper_data'][10]) {
 				
 			# Created - new resource created; returns the new resource as response	
 				case 'Status: 201':
 			# OK - if the resource was deleted returns nothing 
 			#	 - if a ressource was requested returns the ressource(-s) as response
 				case 'Status: 200':
-				
-				# nothing more to expect if a resource was deleted or updated
-					if (($s_httpMethod == "DELETE") || ($s_httpMethod == "PUT"))
+					
+				# nothing more to expect if a resource was deleted	
+					if ($s_httpMethod == "delete")
 						break;
-
-				# form response body	
-					$s_responseBody = trim(implode('',$a_response['body']));
-						
-					if (trim($s_responseBody) == '') {
+					
+					if (trim($s_response) == '') {
 						throw new Exception('Empty server response document for '.$s_fullUrl,
 											self::EXCEPTION_NO_SERVER_RESPONSE);
 					}
 					
-					$o_responseXml = @simplexml_load_string($s_responseBody);
+					$o_responseXml = @simplexml_load_string($s_response);
 	
 					if (!$o_responseXml) {
 						
 						$a_lastPhpError = error_get_last();
 						
-						throw new Exception('Could not parse resource "'.$s_fullUrl.'"<br />'.
+						throw new Exception('Could not parse resource '.$s_fullUrl.'<br />'.
 											'<em>'.$a_lastPhpError['message'].'</em>',
 											self::EXCEPTION_UNPARSABLE_XML);
 					}
 					break;				
 			# error: an unexpected http status code was returned	
 				default:
-					throw new Exception('The response for handling resource "'.$s_fullUrl.'" '.
+					throw new Exception('The response for handling resource '.$s_fullUrl.
 										'with method "'.$s_httpMethod.'" was not expected: '.
-										'<em>'.$s_status.'</em>.',
+										'<em>'.$a_requestInfo['wrapper_data'][10].'</em>.',
 									self::EXCEPTION_UNEXPECTED_RESPONSE);
 			}
 		}
+		
+		//causes error: "Allowed memory size of 33554432 bytes exhausted (tried to allocate 69251463 bytes"
+		//echo "<p>".__FILE__."-".__LINE__.": ".self::$s_pathCreatedResource."</p>\n";
 		
 		return $o_responseXml;
 	}//sendRequest

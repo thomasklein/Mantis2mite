@@ -1,11 +1,9 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-
 ############	
 # VARS 
 #######
-	
+	global $g_plugin_cache;	
+
 /*
  * @local resources/objects
  */	
@@ -28,12 +26,12 @@
 ############	
 # ACTION 
 #######
-
-	$i_userId = auth_get_current_user_id();
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	$i_userId = $o_pluginController->getCurrentUserId();
 	$i_bugId = $_GET['bug_id'];
 	$i_mantisProjectId = $_GET['project_id'];
 	
-	$o_userMiteData = Mantis2mitePlugin::getMiteUserData();
+	$o_userMiteData = $o_pluginController->getMiteUserData();
 	
 	$a_projectBindedRsrces = $o_userMiteData->getBindedRsrcesForMantisProject($i_mantisProjectId);
 	$a_projectUnbindedRsrces = $o_userMiteData->getUnbindedRsrcesForMantisProject($i_mantisProjectId);

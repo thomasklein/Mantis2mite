@@ -13,6 +13,10 @@
 	$s_plugin_mite_description = '<code>Mantis2mite</code> verknüpft einen Mantis-Account 
 		mit einem <em>mite</em>.account. Zeiteinträge können direkt auf Probleme in Mantis 
 		erfasst werden; automatisch werden die Zeiten dann an <em>mite</em> gesendet.';	
+		
+	$s_plugin_mite_no_javascript_enabled = '<strong>Achtung:</strong> Javascript ist deaktiviert.
+		Bitte aktiviere es in deinen Browser-Einstellungen, um das Plugin <em>Mantis2mite</em> 
+		nutzen zu können.';	
 	
 # user account
 ##############	
@@ -38,7 +42,7 @@
 		<code>{bug_id}, {bug_summary}, {bug_description}, {bug_category}, {project_id}, {project_name}, 
 		{user_id}, {user_name}</code>';
 	
-	$s_plugin_mite_header_interconnections = 'Verbindungen';
+	$s_plugin_mite_header_interconnections = 'Bindungen';
 	$s_plugin_mite_please_select = '-- Keines --';
 	$s_plugin_mite_assignment_mite_project = '<em>mite</em>.projekt';
 	$s_plugin_mite_assignment_mite_service = '<em>mite</em>.leistung';
@@ -128,13 +132,18 @@
 	
 	$s_plugin_mite_msg_missing_account_data = 'Du hast vergessen deine Kontodaten anzugeben.';
 	
+	$s_plugin_mite_msg_confirm_changing_account = 'Bis du dir sicher, dass du dein mite.konto wechseln '.
+		'möchtest? Dabei werden alle deine gespeicherten Daten aus Mantis gelöscht (Zeiteinträge '.
+		'in mite bleiben aber erhalten!). Nach dem Klicken auf Ok hast du immer noch die Möglichkeit, '. 
+		'die Seite zu aktualisieren und nichts ist passiert.';
+	
 	$s_plugin_mite_msg_error_disconnecting_account = 'Konnte die Verbindung zu
 		deinem <em>mite</em>.konto nicht lösen. Eine detailierte Fehlermeldung findest du in der 
 		Javascript Konsole.';
 	
-	$s_plugin_mite_msg_confirm_disconnecting_account = 'Bist du dir sicher, dass du die Verbindung 
-		zu deinen <em>mite</em>.konto lösen möchtest? Deine gespeicherten Daten werden dabei 
-		aus Mantis gelöscht.';
+	$s_plugin_mite_msg_confirm_disconnecting_account = 'Bist du dir sicher, dass du die Verbindung '.
+		'zu deinen mite.konto lösen möchtest? Deine gespeicherten Daten werden dabei '. 
+		'aus Mantis gelöscht (Zeiteinträge in mite bleiben aber erhalten!)';
 		
 	$s_plugin_mite_msg_success_disconnecting_account = 'Die Verbindung zu deinem 
 		<em>mite</em>.konto wurde erfolgreich gelöst. Alle deine gespeicherten Daten zu diesem Plugin 
@@ -166,8 +175,12 @@
 		
 	$s_plugin_mite_msg_close_message = 'Nachricht schließen';	
 	
-	$s_plugin_mite_confirm_deleting_time_entry = 'Bist du sicher, dass du diesen Zeiteintrag löschen 
-		möchtest?';
+	$s_plugin_mite_confirm_deleting_time_entry = 'Bist du sicher, dass du diesen Zeiteintrag löschen '. 
+		'möchtest?';
+		
+	$s_plugin_mite_msg_confirm_changing_api_key = 'Bist du dir sicher, dass du deinen API-Schlüssel '.
+		'ändern möchtest? Dies wäre nur sinnvoll, wenn er sich auch wirklich verändert hat und ' .
+		'du ansonsten nicht mehr synchronisieren kannst.';	
 		
 	$s_plugin_mite_msg_error_deleting_time_entry_fnf = 'Konnte den Zeiteintrag 
 		nicht löschen. Eine detailierte Fehlermeldung findest du in der Javascript Konsole.';	

@@ -1,15 +1,16 @@
 <?php
-	require_once( '../../../core.php' );//reload mantis environment
-	Mantis2mitePlugin::initPartial();
-	
 ############	
 # VARS 
 #######
-	
+
+/*	
+ * @global system vars
+ */ 
+	global $g_plugin_cache;
 /*
  * @local resources/objects
  */	
-	$r_result = $o_responseXml = null;
+	$r_result = $o_responseXml = $o_pluginController = null;
 /**
  * @local array contains all configurable values
  */		
@@ -28,11 +29,6 @@
 ############	
 # ACTION 
 #######
-
-# prepare to return an xml message
-	header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, post-check=0');
-	header('Content-Type: text/xml; charset=utf-8');
-	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	
 # !!! POSSIBLE SCRIPT EXIT !!!
 # only proceed if valid params where passed
@@ -42,7 +38,9 @@
 		exit;
 	}
 	
-	$o_miteRemote = Mantis2mitePlugin::getMiteRemote();
+	$o_pluginController = $g_plugin_cache['Mantis2mite'];
+	
+	$o_miteRemote = $o_pluginController->getMiteRemote();
 	$s_tableTimeEntries = plugin_table(Mantis2mitePlugin::DB_TABLE_TE);
 	
 # build key-value array $a_data of the serialized $_POST['data'] string
@@ -60,8 +58,8 @@
 	if ($_POST['action'] == 'addEntry') {
 		
 		$s_note = 
-			Mantis2mitePlugin::replacePlaceHolders($a_data['plugin_mite_note_new_time_entry'],
-				   								   $a_data['plugin_mite_current_bug']);
+			$o_pluginController->replacePlaceHolders($a_data['plugin_mite_note_new_time_entry'],
+				   								   	 $a_data['plugin_mite_current_bug']);
 		
 		$m_postedTime = $a_data['plugin_mite_hours_new_time_entry'];
 		
@@ -129,17 +127,11 @@
 		  	intval($i_timeInMinutes),
 		  	$s_note,
 		  	intval($a_data['plugin_mite_services_new_time_entry']),
-		  	intval($a_data['plugin_mite_projects_new_time_entry']));
+		  	intval($a_data['plugin_mite_projects_new_time_entry'])
+		);
 		
 		try {
-		# EXIT on request errors 
-			if (!$o_miteRemote->sendRequest('post','time_entries.xml', $s_postRequest)) {
-			
-				echo $o_miteRemote->getErrors();
-				exit;
-			}
-			
-			$o_responseXml = $o_miteRemote->getReponseXML();
+			$o_responseXml = $o_miteRemote->sendRequest('post','/time_entries.xml', $s_postRequest);
 	
 		# add the time entry to the database
 			$s_query = sprintf("
@@ -156,7 +148,8 @@
 				Mantis2mitePlugin::mysqlDate($o_responseXml->{'date-at'},true),
 				htmlentities($s_note,ENT_QUOTES,'UTF-8'),
 				Mantis2mitePlugin::mysqlDate($o_responseXml->{'created-at'}),
-				Mantis2mitePlugin::mysqlDate($o_responseXml->{'created-at'}));
+				Mantis2mitePlugin::mysqlDate($o_responseXml->{'created-at'})
+			);
 			$r_result = db_query_bound($s_query);
 			
 		} catch (Exception $e) {
@@ -172,29 +165,23 @@
 	elseif ($_POST['action'] == 'deleteEntry') {
 		
 		try {
-		# EXIT on request errors 
-			if (!$o_miteRemote->sendRequest('delete',
-											'time_entries/'.$a_data['mite_id'].".xml",
-											$s_postRequest)) {
-			
-				echo $o_miteRemote->getErrors();
-				exit;
-			}
-			
-		# delete entry from the Mantis database	
-			$s_query = sprintf(" 
-		         DELETE FROM $s_tableTimeEntries
-				 WHERE mite_time_entry_id = %d AND user_id = %d",
-				 $a_data['mite_id'],
-				 auth_get_current_user_id());
-		
-			$r_result = db_query_bound($s_query);
+		 	$o_miteRemote->sendRequest('delete',
+									   '/time_entries/'.$a_data['mite_id'].".xml",
+									   $s_postRequest);
 			
 		} catch (Exception $e) {
 		# EXIT on function errors
 			echo "<error>".$e->getMessage()."</error>";
-			exit;
 		}
+
+	# delete entry from the Mantis database	
+		$s_query = sprintf(" 
+	         DELETE FROM $s_tableTimeEntries
+			 WHERE mite_time_entry_id = %d AND user_id = %d",
+			 $a_data['mite_id'],
+			 auth_get_current_user_id());
+	
+		$r_result = db_query_bound($s_query);
 	}
 	
 	echo "<messages datetimestamp='".gmdate('Y-m-d H:i:s')."'></messages>";

@@ -427,3 +427,26 @@ span.plugin_mite_link_to_settings {
 
 /* @end */
 
+/* @group no javascript */
+
+.plugin_mite_text_if_no_javascript {
+	background: #FBE3E4;
+	color: #D12F19;
+	border: 1px solid #FBC2C4;
+	padding: 0.3em;
+	font-weight: normal;
+	font-size: 90%;
+	width: 200px;
+	margin: 1em auto;
+	
+}
+
+.plugin_mite_hide_if_no_javascript {
+	display: none;
+}
+
+
+/* @end */
+
+
+

@@ -13,6 +13,9 @@
 	$s_plugin_mite_description = 'Connects your Mantis account with your <em>mite</em>.account. 
 		Track your time easily on issues within Mantis and get them automatically send to <em>mite</em>.';	
 	
+	$s_plugin_mite_no_javascript_enabled = '<strong>Please note</strong>: Javascript is deactived. 
+		Please activate it in your browser settings to use the plugin <em>Mantis2mite</em>.';
+	
 # user account
 ##############	
 	$s_plugin_mite_user_config_header = 'Connection to your <em>mite</em>.account';
@@ -125,13 +128,22 @@
 	$s_plugin_mite_msg_error_verification = 'Could not connect to your <em>mite</em> account. 
 		Please recheck your account data.';
 	
+	$s_plugin_mite_msg_confirm_changing_account = 'Are you sure you want to change your '. 
+		'mite.account? This action is equivalent to disconnecting your account from Mantis. '.
+		'By doing it, all of your saved data in Mantis will be deleted (time entries '.
+		'will still be available in mite!)';
+	
 	$s_plugin_mite_msg_missing_account_data = 'You forgot to provide your account data.';
 	
 	$s_plugin_mite_msg_error_disconnecting_account = 'Could not disconnect your account. Please check 
 		the javascript console for a detailed error message.';
+		
+	$s_plugin_mite_msg_confirm_changing_api_key = 'Are you sure you want to change your API-Key? '.
+		'This would be only reasonable, if it has actually changed.';	
 	
-	$s_plugin_mite_msg_confirm_disconnecting_account = 'Are you sure you want to disconnect your 
-		mite.account and delete all of your saved data from Mantis?';
+	$s_plugin_mite_msg_confirm_disconnecting_account = 'Are you sure you want to disconnect your '. 
+		'mite.account and delete all of your saved data from Mantis? (time entries '.
+		'will still be available in mite!)';
 		
 	$s_plugin_mite_msg_success_disconnecting_account = 'Your account was disconnected from Mantis 
 		and all of your saved data within the plugin is now deleted.';

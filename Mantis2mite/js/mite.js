@@ -1,5 +1,10 @@
 $(window).load(function(){
 	
+// show elements hidden for users with deactivated javascript 
+	$('.plugin_mite_hide_if_no_javascript').each(function(){
+		$(this).show();
+	});
+	
 	if ($('#plugin_mite_messages').length)
 		MITE.init();
 	else {
@@ -20,7 +25,7 @@ var MITE = function() {
 //#######	
 	var $o_messageBox = $o_messageBoxMsg = $o_miteLastUpdated = null,
 		a_messages = a_states = {},
-		s_pathPartials = s_pathImages = '',
+		s_pathPartialHandler = s_pathImages = '',
 		b_initialized = false;
 		 	
 //############	
@@ -33,7 +38,7 @@ var MITE = function() {
 	var initVars = function () {
 		
 	// general vars	
-		s_pathPartials = $("#plugin_mite_path").val() + 'partials/';
+		s_pathPartialHandler = $("#plugin_mite_path").val() + 'partials/handlePartial.php';
 		s_pathImages = $("#plugin_mite_path").val() + 'images/' 
 		
 	// selectors	
@@ -60,7 +65,9 @@ var MITE = function() {
 		a_messages['missingAccountData'] = $("#plugin_mite_msg_missing_account_data").val();
 		a_messages['successSavingBindings'] = $("#plugin_mite_msg_success_saving_bindings").val();
 		a_messages['errorSavingBindings'] = $("#plugin_mite_msg_error_saving_bindings").val();
+		a_messages['confirmChangingApiKey'] = $("#plugin_mite_msg_confirm_changing_api_key").val();
 		a_messages['confirmDisconnectingAccount'] = $("#plugin_mite_msg_confirm_disconnecting_account").val();
+		a_messages['confirmChangingAccount'] = $("#plugin_mite_msg_confirm_changing_account").val();
 		a_messages['successDisconnectingAccount'] = $("#plugin_mite_msg_success_disconnecting_account").val();
 		a_messages['disconnectingAccount'] = $("#plugin_mite_disconnecting_account_data_active").val();
 		a_messages['errorDisconnectingAccount'] = $("#plugin_mite_msg_error_disconnecting_account").val();
@@ -159,10 +166,15 @@ var MITE = function() {
 	/*********************************************************	
 	* Returns the full path with file extension to the given partial name 
 	*/	
-		getPathToPartial : function(s_partialName) {
+		makePartialPath : function(s_partialName,s_contentType) {
 			
-			return s_pathPartials + s_partialName + '.php';
-		},//getPathToPartial
+			var s_partialPath = s_pathPartialHandler + '?partial=' + s_partialName;
+			
+			if (s_contentType)
+				s_partialPath += '&contentType=' + s_contentType;
+			
+			return s_partialPath;
+		},//makePartialPath
 		
 	/*****************************************************
 	 * Shows a fixed message box on top of the screen with the content 
@@ -262,7 +274,7 @@ var MITE = function() {
 								 "Check the Javascript error console for details.</li></ul></small>");
 					
 					MITE.printToConsole('applicationError',
-										{file   : MITE.getPathToPartial('time_entry_process'),
+										{file   : MITE.makePartialPath('time_entry_process'),
 										 details   : xmlData.childNodes[1].textContent});
 				}
 				

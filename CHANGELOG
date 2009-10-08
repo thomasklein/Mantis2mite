@@ -1,4 +1,8 @@
-Changes in version 1.1 [13.09.2009]
+-- Changes in version 1.2 [8th October 2009]
+* miteRemote.class.php is now independent of the cURL-library formerly used to connect to the mite.api
+* various structural updates of the plugin classes
+
+-- Changes in version 1.1 [13th September 2009]
 
 Complete rework of version 1.0
 * introduced classes for better user data handling and higher security
