@@ -6,6 +6,14 @@
  * @author Thomas Klein <thomas.klein83@gmail.com>
  * @license MIT License
  * 
+ * Example usage:
+ * -------------
+	$o_miteRemote = miteRemote::getInstance();
+ 	$o_miteRemote->init(<YOUR_API_KEY>,
+ 					    <YOUR_ACCOUNT_NAME>);
+ 	$o_responseXML = $o_miteRemote->sendRequest('get','/time_entries.xml');
+ * -------------
+ * 
  */
 class miteRemote {
 	
@@ -91,7 +99,7 @@ class miteRemote {
  * Sends a request to mite and stores possible response data in $this->o_responseXml
  *
  * @param string $s_httpMethod 'post', 'get', 'delete', 'put'
- * @param string $s_rsrcName can be 'time_entries', 'projects', 'services'
+ * @param string $s_rsrcName; e.g. '/time_entries.xml', '/projects.xml', '/time_entries/12345.xml'
  * @param string $s_requestData data for POST or PUT request
  * 
  * @throws 
