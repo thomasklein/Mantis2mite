@@ -112,7 +112,7 @@ class miteRemote {
  * - EXCEPTION_NO_SERVER_RESPONSE
  * - EXCEPTION_UNEXPECTED_RESPONSE
  * 
- * @return boolean true - if request 
+ * @return object (simplexml) is empty when using method 'delete' or 'put' 
  * 		    
  */	
 	public function sendRequest($s_httpMethod, $s_rsrcName, $s_requestData = '') {
