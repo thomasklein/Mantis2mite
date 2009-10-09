@@ -60,7 +60,13 @@
 		$s_note = 
 			$o_pluginController->replacePlaceHolders($a_data['plugin_mite_note_new_time_entry'],
 				   								   	 $a_data['plugin_mite_current_bug']);
-		
+	
+	# mask special chars that might cause problems in a xml message	
+		$s_note = str_replace("&","&amp;",$s_note);
+		$s_note = str_replace("<","&lt;",$s_note);
+		$s_note = str_replace(">","&gt;",$s_note);
+		$s_note = str_replace("Š","&auml;",$s_note);
+				   								   	 
 		$m_postedTime = $a_data['plugin_mite_hours_new_time_entry'];
 		
 	# in this case a single number was given and hours is as time unit suspected
@@ -125,7 +131,7 @@
 			</time-entry>",
 		  	Mantis2mitePlugin::mysqlDate($a_data['plugin_mite_date_new_time_entry']),
 		  	intval($i_timeInMinutes),
-		  	$s_note,
+		  	urldecode($s_note),
 		  	intval($a_data['plugin_mite_services_new_time_entry']),
 		  	intval($a_data['plugin_mite_projects_new_time_entry'])
 		);
@@ -166,8 +172,7 @@
 		
 		try {
 		 	$o_miteRemote->sendRequest('delete',
-									   '/time_entries/'.$a_data['mite_id'].".xml",
-									   $s_postRequest);
+									   '/time_entries/'.$a_data['mite_id'].".xml");
 			
 		} catch (Exception $e) {
 		# EXIT on function errors
