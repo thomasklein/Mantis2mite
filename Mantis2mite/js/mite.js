@@ -296,13 +296,13 @@ var MITE = function() {
 			if (a_dateParts.length != 3) return false;
 			
 			i_year = a_dateParts[0];
-			i_month = a_dateParts[1];
-			i_day = a_dateParts[2];
+			i_month = parseInt(a_dateParts[1], 10);
+			i_day = parseInt(a_dateParts[2], 10);
 		
-			o_date = new Date (a_dateParts[0],a_dateParts[1],a_dateParts[2]);
+			o_date = new Date (i_year, (i_month-1), i_day);
 			
 			if (i_year != o_date.getFullYear()) return false;
-			if (i_month != o_date.getMonth()) return false;
+			if ((i_month-1) != o_date.getMonth()) return false;
 			if (i_day != o_date.getDate()) return false;
 		
 		   return true;
