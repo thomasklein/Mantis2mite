@@ -496,7 +496,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 /*****************************************************
  * Adds a row for time entries after the 'Status' row in the bug view
  */	
-  	public function addTimeEntryRow_bugDetail($c_eventName,$i_bugId, $b_advancedView) {
+  	public function addTimeEntryRow_bugDetail($c_eventName,$i_bugId) {
 		
   	# don't add the time entry row, if 
   	# - the user can't see time entries of others AND

@@ -10,6 +10,12 @@ h2. Anforderungen
 * PHP 5 >= 5.1.0
 * ein _mite_.account ("30 Tage kann kostenfrei getestet werden":https://signup.mite.yo.lk/signup/de)
 
+h2. Wichtiger Hinweis zu den Versionen des Plugins
+
+Bitte verwende die Version 1.2 des Plugins für Mantis BT 1.2.0 RC1.
+
+Für den RC2 und höhere Softwareversionen von Mantis BT gelten die Version ab 1.2.1.
+
 h2. Installation
 
 # Verschiebe das <code>Mantis2mite</code> - Verzeichnis in das <code>plugins</code> - Verzeichnis deiner Mantis Installation

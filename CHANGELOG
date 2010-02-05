@@ -1,3 +1,6 @@
+-- Changes in version 1.2.1 [5th February 2010]
+* upgraded event functions for Mantis 1.2.0 RC 2
+
 -- Changes in version 1.2 [8th October 2009]
 * miteRemote.class.php is now independent of the cURL-library formerly used to connect to the mite.api
 * various structural updates of the plugin classes

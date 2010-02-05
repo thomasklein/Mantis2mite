@@ -10,6 +10,13 @@ h2. Requirements
 * PHP 5 >= 5.1.0
 * a _mite_.account (you can easily signup for a "free 30 days trial account":https://signup.mite.yo.lk/signup/en )
 
+h2. Important note for the plugin versions
+
+Please use version 1.2 of the plugin for Mantis BT 1.2.0 RC1.
+
+For higher versions of Mantis BT you have to use the plugin version from 1.2.1.
+
+
 h2. Installation
 
 # Move the <code>Mantis2mite</code> directory into the <code>plugins</code> directory of your Mantis installation
