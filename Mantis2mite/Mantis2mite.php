@@ -30,7 +30,7 @@
 
 require_once(config_get('class_path').'MantisPlugin.class.php');
 require_once('classes/miteUserData.class.php');
-require_once('classes/miteRemote.class.php');
+require_once('classes/mite.php');
 require_once('classes/mitePartialsController.class.php');
 
 class Mantis2mitePlugin extends MantisPlugin {
@@ -618,7 +618,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 		if (!auth_get_current_user_cookie()) return;
 		
 		$this->i_userId = auth_get_current_user_id();
-		$this->o_miteRemote = miteRemote::getInstance();
+		$this->o_miteRemote = mite::getInstance();
 		$this->o_mitePartialsController = mitePartialsController::getInstance();
 		
 	# only fill session with user data, if there's a user currently logged in	

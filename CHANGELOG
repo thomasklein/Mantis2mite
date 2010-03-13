@@ -1,3 +1,8 @@
+-- Changes in version 1.2.2 [13th March 2010]
+* renamed class 'miteRemote.class.php' to 'mite.php' for consistency with the PHP library 'mite.php' (http://github.com/thomasklein/mite.php)
+* Updated http status codes in 'mite.php' - otherwise it would not work anymore with the 
+mite.api
+
 -- Changes in version 1.2.1 [5th February 2010]
 * upgraded event functions for Mantis 1.2.0 RC 2
 
@@ -6,7 +11,6 @@
 * various structural updates of the plugin classes
 
 -- Changes in version 1.1 [13th September 2009]
-
 Complete rework of version 1.0
 * introduced classes for better user data handling and higher security
 ** miteRemote.class.php: provides methods to communicate with the MITE API based on the cURL library

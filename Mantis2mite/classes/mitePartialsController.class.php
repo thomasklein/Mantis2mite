@@ -38,7 +38,7 @@ class mitePartialsController {
 /*****************************************************
  * Returns always the same object instance
  * 
- * @return object miteRemote
+ * @return object mite
  */
 	public static function getInstance() {
  
