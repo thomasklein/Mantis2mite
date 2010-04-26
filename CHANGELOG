@@ -1,3 +1,6 @@
+-- Changes in version 1.2.3 [26th April 2010]
+* Bugfix: for MySQL <= 5.0.32 an SQL statement could not get executed because the size of several varchar fields was 350 instead of 255 - thanks to Michael from 01-Scripts!
+
 -- Changes in version 1.2.2 [13th March 2010]
 * renamed class 'miteRemote.class.php' to 'mite.php' for consistency with the PHP library 'mite.php' (http://github.com/thomasklein/mite.php)
 * Updated http status codes in 'mite.php' - otherwise it would not work anymore with the 

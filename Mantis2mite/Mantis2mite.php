@@ -53,8 +53,8 @@ class Mantis2mitePlugin extends MantisPlugin {
  * @pulic static array
  */	
 	public static $a_userTable_newColumns = array(
-		self::DB_FIELD_API_KEY 				=> "C(350) NOTNULL DEFAULT \" '' \"",
-		self::DB_FIELD_ACCOUNT_NAME 		=> "C(350) NOTNULL DEFAULT \" '' \"",
+		self::DB_FIELD_API_KEY 				=> "C(255) NOTNULL DEFAULT \" '' \"",
+		self::DB_FIELD_ACCOUNT_NAME 		=> "C(255) NOTNULL DEFAULT \" '' \"",
 		self::DB_FIELD_NOTE_PATTERN 		=> "X NOTNULL DEFAULT \" '' \"",
 		self::DB_FIELD_CONNECT_VERIFIED 	=> "L NOTNULL DEFAULT \" '0' \"",
 		self::DB_FIELD_CONNECT_LAST_UPDATED => "T NOTNULL DEFTIMESTAMP");
@@ -95,7 +95,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 			id							I		UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
 			user_id						I		UNSIGNED NOTNULL,
 			type						C(10)	NOTNULL DEFAULT \" '' \",
-			name						C(350)	NOTNULL DEFAULT \" '' \",
+			name						C(255)	NOTNULL DEFAULT \" '' \",
 			mite_project_id				I		UNSIGNED NOTNULL DEFAULT '0',
 			mite_service_id				I		UNSIGNED NOTNULL DEFAULT '0',
 			mite_updated_at				T		NOTNULL DEFAULT '0'",
