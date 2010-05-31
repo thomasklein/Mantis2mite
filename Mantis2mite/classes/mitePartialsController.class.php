@@ -81,8 +81,7 @@ class mitePartialsController {
 			case self::CONTENT_TYPE_XML:
 				
 			# prepare to return an xml message
-				header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, 
-						post-check=0');
+				header('Cache-Control: must-revalidate, pre-check=0, no-store, no-cache, max-age=0, post-check=0');
 				header('Content-Type: text/xml; charset=utf-8');
 				echo '<?xml version="1.0" encoding="UTF-8"?>';
 				
