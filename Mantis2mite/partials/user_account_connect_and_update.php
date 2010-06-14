@@ -45,7 +45,8 @@
 									 
 	$o_miteRemote = $o_pluginController->getMiteRemote();
 	$o_miteRemote->init($_POST[Mantis2mitePlugin::DB_FIELD_API_KEY],
-						$_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME]);
+						$_POST[Mantis2mitePlugin::DB_FIELD_ACCOUNT_NAME],
+						"Mantis2mite/" . Mantis2mitePlugin::MANTIS2MITE_VERSION);
 	
 	
 # PROJECTS AND SERVICES synchronisation
@@ -175,11 +176,9 @@
 	foreach ($a_mantisTimeEntriesNotFound as $i_miteTimeEntryId => $i_mantisTimeEntryId) {
 		
 		try {
-			$o_miteRemote->sendRequest('get','/time_entries/'.$i_miteTimeEntryId);
+			$o_xml = $o_miteRemote->sendRequest('get','/time_entries/'.$i_miteTimeEntryId);
 			
 		# if it does exist, but was moved to another project, prepare params to update the entry	
-			$o_xml = $o_miteRemote->getReponseXML();
-			
 			$s_miteTimeEntryUpdated = 
 						Mantis2mitePlugin::mysqlDate((string)$o_xml->{'updated-at'});
 						
@@ -197,7 +196,7 @@
 			switch ($e->getCode()) {
 				
 			# if the entry does not exist anymore, delete it from the MANTIS database	
-				case miteRemote::EXCEPTION_RSRC_NOT_FOUND: 
+				case mite::EXCEPTION_RSRC_NOT_FOUND: 
 					
 					$a_logs[Mantis2mitePlugin::API_RSRC_TE][] = "Deleted time entry $i_mantisTimeEntryId";
 					$a_queries[] = "DELETE FROM $s_tableTimeEntries WHERE id = $i_mantisTimeEntryId";

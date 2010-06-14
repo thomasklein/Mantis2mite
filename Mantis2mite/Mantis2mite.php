@@ -39,8 +39,8 @@ class Mantis2mitePlugin extends MantisPlugin {
 # PROPERTIES/CONSTANTS
 #######	
 	
-	const TIMEZONE_MITE_SERVER = 'Europe/Berlin';
-	
+	const MANTIS2MITE_VERSION 			= 'v1.2.4';
+	const TIMEZONE_MITE_SERVER 			= 'Europe/Berlin';
 	const DB_FIELD_API_KEY 				= "mite_api_key";
 	const DB_FIELD_ACCOUNT_NAME			= "mite_account_name";
 	const DB_FIELD_NOTE_PATTERN			= "mite_note_pattern";
@@ -190,7 +190,7 @@ class Mantis2mitePlugin extends MantisPlugin {
 		$this->name        = 'Mantis2<em>mite</em>';
 		$this->description = lang_get('plugin_mite_description');
 		$this->page = 'config';
-		$this->version     = '1.2';
+		$this->version     = self::MANTIS2MITE_VERSION;
 		$this->requires    = array('MantisCore'=> '1.2.0');
 		$this->author      = 'Thomas Klein';
 		$this->contact     = 'thomas.klein83@gmail.com';
@@ -626,7 +626,8 @@ class Mantis2mitePlugin extends MantisPlugin {
 			
 			$this->o_miteUserData = new miteUserData($this,$this->i_userId);
 			$this->o_miteRemote->init($this->getDecodedUserValue(self::DB_FIELD_API_KEY),
-									  $this->getDecodedUserValue(self::DB_FIELD_ACCOUNT_NAME));
+									  $this->getDecodedUserValue(self::DB_FIELD_ACCOUNT_NAME),
+									  "Mantis2mite/" . self::MANTIS2MITE_VERSION);
 		
 		}
 		return true;

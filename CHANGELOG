@@ -1,3 +1,6 @@
+-- Changes in version 1.2.4 [14th June 2010]
+* implemented the new version of mite.php (v1.2) which additionally sends information about the User-Agent to the mite.api
+
 -- Changes in version 1.2.3 [26th April 2010]
 * Bugfix: for MySQL <= 5.0.32 an SQL statement could not get executed because the size of several varchar fields was 350 instead of 255 - thanks to Michael from 01-Scripts!
 
