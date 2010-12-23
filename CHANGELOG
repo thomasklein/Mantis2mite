@@ -1,3 +1,6 @@
+-- Changes in version 1.2.5 [23th December 2010]
+* Bugfix: Implemented the new version of mite.php (v1.2.1) which solves a communication problem with the mite.api
+
 -- Changes in version 1.2.4 [14th June 2010]
 * implemented the new version of mite.php (v1.2) which additionally sends information about the User-Agent to the mite.api
 
