@@ -1,4 +1,4 @@
--- Changes in version 1.2.5.1 [14th January 2011]
+-- Changes in version 1.2.6 [13th January 2011]
 * Bugfix: Changed HTTP protocol version for requests to 1.0 in mite.php  to avoid problems with chunked transfer encoding which is now used by the mite.api
 
 -- Changes in version 1.2.5 [23th December 2010]
