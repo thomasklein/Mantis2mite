@@ -1,3 +1,6 @@
+-- Changes in version 1.2.7 [19th May 2011]
+* Fix: now using mite.php 1.2.3 which fixed the 'Call-time pass-by-reference' error. Thanks to Sebastian Seelig for pointing me on this! 
+
 -- Changes in version 1.2.6 [13th January 2011]
 * Bugfix: Changed HTTP protocol version for requests to 1.0 in mite.php  to avoid problems with chunked transfer encoding which is now used by the mite.api
 
