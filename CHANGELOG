@@ -1,3 +1,6 @@
+-- Changes in version 1.2.8 [1st Sepember 2011]
+* Fix: Masked possible special chars reserved as xml entities in logger xml-response
+
 -- Changes in version 1.2.7 [19th May 2011]
 * Fix: now using mite.php 1.2.3 which fixed the 'Call-time pass-by-reference' error. Thanks to Sebastian Seelig for pointing me on this! 
 
