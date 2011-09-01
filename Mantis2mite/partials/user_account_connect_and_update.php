@@ -361,9 +361,16 @@
 # build xml log messages	
 	foreach ($a_logs as $s_type => $a_messages) {
 
-		foreach ($a_messages as $s_message)
-			$s_xmlMsg .= "<message data='".$s_type."'>".$s_message."</message>";
+		foreach ($a_messages as $s_message) {
 			
+		# mask special chars reserved as xml entities
+			$s_message = str_replace("&", "&amp;", $s_message);
+			$s_message = str_replace("<", "&lt;", $s_message);
+			$s_message = str_replace(">", "&gt;", $s_message);
+			$s_message = str_replace('"', "&quot;", $s_message);
+			$s_message = str_replace("'", "&apos;", $s_message);
+			$s_xmlMsg .= "<message data='".$s_type."'>".$s_message."</message>";
+		}
 	}
 	
 # force re-initialization of session stored user values	

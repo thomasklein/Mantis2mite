@@ -252,7 +252,7 @@ var MITE = function() {
 			// otherwise there was an error in the executed partial 	
 			else {
 				
-			// if the xml message contains error nodes there was an expected error	
+			// if the xml message contains error nodes there was an unexpected error	
 				if ($(xmlData).find('error').length) {
 					
 					var s_errors = '';
@@ -314,6 +314,7 @@ var MITE = function() {
 		printToConsole : function (s_msgType, o_params) {
 		
 			if (s_msgType == 'failedAjaxRequest') {
+				
 				console.error("No valid xml response was returned. Check '" + 
 							  o_params['file'] + "' for existence and errors!");
 				console.info("Details: " + o_params['details']);
