@@ -1,3 +1,6 @@
+-- Changes in version 1.2.9 [2nd Sepember 2011]
+* Update: mite.php - Throws now a "EXCEPTION_RSRC_NOT_FOUND" exception when the returned HTTP response code was "Status: 302 Found" which is returned by the mite.api when trying to access a non-existing resource
+
 -- Changes in version 1.2.8 [1st Sepember 2011]
 * Fix: Masked possible special chars reserved as xml entities in logger xml-response
 

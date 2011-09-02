@@ -264,6 +264,12 @@ class mite {
 										'Resource "'.$s_fullUrl.'" does not exist.',
 										self::EXCEPTION_RSRC_NOT_FOUND);
 					break;
+					
+				case 'Status: 302 Found':
+					throw new Exception('Status code 302: '.
+										'Resource "'.$s_fullUrl.'" does not exist or was moved to another uri.',
+										self::EXCEPTION_RSRC_NOT_FOUND);
+					break;
 				
 				case 'Status: 500 Internal Server Error':
 					throw new Exception('Status code 500: '.
