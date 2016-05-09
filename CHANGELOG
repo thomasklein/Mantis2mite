@@ -1,3 +1,6 @@
+-- Changes in version 1.2.10 [10th May 2016]
+* Update: mite.php v1.2.6 - Corrected status code handling
+
 -- Changes in version 1.2.9 [2nd Sepember 2011]
 * Update: mite.php - Throws now a "EXCEPTION_RSRC_NOT_FOUND" exception when the returned HTTP response code was "Status: 302 Found" which is returned by the mite.api when trying to access a non-existing resource
 
@@ -5,7 +8,7 @@
 * Fix: Masked possible special chars reserved as xml entities in logger xml-response
 
 -- Changes in version 1.2.7 [19th May 2011]
-* Fix: now using mite.php 1.2.3 which fixed the 'Call-time pass-by-reference' error. Thanks to Sebastian Seelig for pointing me on this! 
+* Fix: now using mite.php 1.2.3 which fixed the 'Call-time pass-by-reference' error. Thanks to Sebastian Seelig for pointing me on this!
 
 -- Changes in version 1.2.6 [13th January 2011]
 * Bugfix: Changed HTTP protocol version for requests to 1.0 in mite.php  to avoid problems with chunked transfer encoding which is now used by the mite.api
@@ -21,7 +24,7 @@
 
 -- Changes in version 1.2.2 [13th March 2010]
 * renamed class 'miteRemote.class.php' to 'mite.php' for consistency with the PHP library 'mite.php' (http://github.com/thomasklein/mite.php)
-* Updated http status codes in 'mite.php' - otherwise it would not work anymore with the 
+* Updated http status codes in 'mite.php' - otherwise it would not work anymore with the
 mite.api
 
 -- Changes in version 1.2.1 [5th February 2010]
